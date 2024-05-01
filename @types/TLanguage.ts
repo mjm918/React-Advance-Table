@@ -1,0 +1,1 @@
+export type TLanguage = "en" | "de" | "bn" | "es" | "hi" | "nl" | "tr" | "zh" | "ja" | "ko";
