@@ -1,91 +1,86 @@
 "use client";
 import * as React from "react";
-import {getColumns} from "@/lib/columns";
-import {
-	DataTableCreateRowProps,
-	DataTableDeleteRowProps,
-	DataTableFilterField
-} from "@/components/data-table/interface";
-import {useDataTable} from "@/hooks/useDataTable";
-import {useDataTableProvider} from "@/components/data-table/tools/data-table-provider";
-import AdvanceDataTable from "@/components/data-table/AdvanceDataTable";
-import type {Row, Table} from "@tanstack/react-table";
-import {ReactNode} from "react";
+import {useMemo} from "react";
+import {ColumnDef} from "@tanstack/react-table";
+import {DataTable} from "@/components/data-table/data-table";
+import {DataTableColumnHeader} from "@/components/data-table/data-table-column-header";
+import {Checkbox} from "@/components/ui/checkbox";
 
 export default function Home() {
-	const {featureFlags} = useDataTableProvider();
-	const columns = getColumns();
-	const filterFields: DataTableFilterField<DataType>[] = [
+	const columns = useMemo<ColumnDef<DataType>[]>(()=>[
 		{
-			label: "Name",
-			value: "Name",
-			placeholder: "Filter names...",
+			id: "select",
+			header: ({ table }) => (
+				<Checkbox
+					checked={
+						table.getIsAllPageRowsSelected() ||
+						(table.getIsSomePageRowsSelected() && "indeterminate")
+					}
+					onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+					aria-label="Select all"
+					className="translate-y-0.5"
+				/>
+			),
+			cell: ({ row }) => (
+				<Checkbox
+					checked={row.getIsSelected()}
+					onCheckedChange={(value) => row.toggleSelected(!!value)}
+					aria-label="Select row"
+					className="translate-y-0.5"
+				/>
+			),
+			enableSorting: false,
+			enableHiding: false,
 		},
 		{
-			label: "Remark",
-			value: "Remark"
+			accessorKey: "Name",
+			header: (p)=> <DataTableColumnHeader column={p.column} title={"Name"}/>,
+			cell: info => info.getValue(),
+			filterFn: "equalsString"
 		},
 		{
-			label: "IsDefault",
-			value: "IsDefault",
-			options: [
-				{
-					label: "Yes",
-					value: "Yes",
-					withCount: true,
-				},
-				{
-					label: "No",
-					value: "No",
-					withCount: true,
-				}
-			],
+			accessorKey: "Remark",
+			header: (p)=> <DataTableColumnHeader column={p.column} title={"Remark"}/>,
+			cell: info => info.getValue(),
 		},
-	]
-	const data = new Array(100).fill(0).map((it,id)=>({
-		Name: `${id} - Name`,
-		Remark: `${id} - Remark`,
-		IsDefault: id % 2 === 0 ? "Yes" : "No"
-	}));
-	const pageCount = Math.ceil(data.length / 20);
-
-	const { table } = useDataTable({
-		data,
-		columns,
-		pageCount,
-		// optional props
-		filterFields,
-		enableAdvancedFilter: featureFlags.includes("advancedFilter"),
-		defaultPerPage: 20,
-		defaultSort: "Name.asc",
-	})
-
+		{
+			header: (p)=> <DataTableColumnHeader column={p.column} title={"Default Location?"}/>,
+			accessorKey: "IsDefault",
+			cell: info => <p>{info.getValue() ? "Yes" : "No"}</p>
+		}
+	],[]);
+	const data = new Array(1000).fill(0).map((_it,index)=>({
+		Name: `Name ${index}`,
+		Remark: `Remark ${index}`,
+		IsDefault: index % 2 === 0
+	} as DataType));
 	return (
 		<main className="flex min-h-screen flex-col items-center justify-between p-24">
-			<AdvanceDataTable
-				table={table}
-				filterFields={filterFields}
-				floatingBarProps={{
-					onExport: (table: Table<DataType>) => {},
-					onDelete: (table: Table<DataType>,rows: Row<DataType>[]) => {},
-					actions: []
-				}}
-				toolBarProps={{
-					deleteProps: {
-						buttonTitle: "Delete",
-						title: "To Delete",
-						description: "How to delete?",
-						children: null
-					},
-					createProps: {
-						title: "Create",
-						description: "To create",
-						buttonTitle: "Create Now",
-						children: null,
-					},
-					onExport: (table: Table<DataType>) => {},
-					exportTitle: "Export"
-				}}/>
+			<DataTable
+				searchableColumns={[
+					{
+						id: "Name",
+						title: "Name"
+					}
+				]}
+				filterableColumns={[
+					{
+						options: [
+							{
+								label: "Yes",
+								value: "Yes"
+							},
+							{
+								label: "No",
+								value: "No"
+							}
+						],
+						id: "IsDefault",
+						title: "Is Default?"
+					}
+				]}
+				columns={columns}
+				data={data}/>
 		</main>
 	);
 }

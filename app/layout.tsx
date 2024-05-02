@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import {DataTableProvider} from "@/components/data-table/tools/data-table-provider";
 import {TooltipProvider} from "@/components/ui/tooltip";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,9 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TooltipProvider>
-          <DataTableProvider>
-            {children}
-          </DataTableProvider>
+          {children}
         </TooltipProvider>
       </body>
     </html>
