@@ -1,86 +1,75 @@
 "use client";
+
 import * as React from "react";
-import {useMemo} from "react";
-import {ColumnDef} from "@tanstack/react-table";
-import {DataTable} from "@/components/data-table/data-table";
-import {DataTableColumnHeader} from "@/components/data-table/data-table-column-header";
-import {Checkbox} from "@/components/ui/checkbox";
+import {useMemo, useState} from "react";
+import {ColumnDef} from '@tanstack/react-table';
+import {makeData, Person} from "@/lib/makeData";
+import {isWithinInterval} from "date-fns";
+import {AdvancedDataTable} from "@/components/data-table";
 
 export default function Home() {
-	const columns = useMemo<ColumnDef<DataType>[]>(()=>[
-		{
-			id: "select",
-			header: ({ table }) => (
-				<Checkbox
-					checked={
-						table.getIsAllPageRowsSelected() ||
-						(table.getIsSomePageRowsSelected() && "indeterminate")
-					}
-					onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-					aria-label="Select all"
-					className="translate-y-0.5"
-				/>
-			),
-			cell: ({ row }) => (
-				<Checkbox
-					checked={row.getIsSelected()}
-					onCheckedChange={(value) => row.toggleSelected(!!value)}
-					aria-label="Select row"
-					className="translate-y-0.5"
-				/>
-			),
-			enableSorting: false,
-			enableHiding: false,
-		},
-		{
-			accessorKey: "Name",
-			header: (p)=> <DataTableColumnHeader column={p.column} title={"Name"}/>,
-			cell: info => info.getValue(),
-			filterFn: "equalsString"
-		},
-		{
-			accessorKey: "Remark",
-			header: (p)=> <DataTableColumnHeader column={p.column} title={"Remark"}/>,
-			cell: info => info.getValue(),
-		},
-		{
-			header: (p)=> <DataTableColumnHeader column={p.column} title={"Default Location?"}/>,
-			accessorKey: "IsDefault",
-			cell: info => <p>{info.getValue() ? "Yes" : "No"}</p>
-		}
-	],[]);
-	const data = new Array(1000).fill(0).map((_it,index)=>({
-		Name: `Name ${index}`,
-		Remark: `Remark ${index}`,
-		IsDefault: index % 2 === 0
-	} as DataType));
+	const filename = "exampleExport";
+	const [data, setData] = useState<Person[]>(() => makeData(5_000))
+	const columns = useMemo<ColumnDef<Person, any>[]>(
+		() => [
+			{
+				header: "First Name",
+				accessorKey: 'firstName',
+				id: 'firstName',
+				cell: info => info.getValue(),
+			},
+			{
+				accessorFn: row => row.lastName,
+				id: 'lastName',
+				cell: info => info.getValue(),
+				header: "Last Name",
+			},
+			{
+				accessorKey: 'age',
+				id: 'age',
+				header: "Age",
+				meta: {
+					filterVariant: 'range',
+				},
+			},
+			{
+				accessorKey: 'visits',
+				id: 'visits',
+				header: "Visits",
+				meta: {
+					filterVariant: 'range',
+				},
+			},
+			{
+				accessorKey: 'lastUpdate',
+				id: 'lastUpdate',
+				header: "Last Update",
+				cell: info => {
+					const str = info.getValue() as Date;
+					return str.toLocaleDateString();
+				},
+				meta: {
+					filterVariant: 'date',
+				},
+				filterFn: (row, columnId, filterValue) => {
+					const columnDate = row.getValue(columnId) as Date;
+					const {from, to} = filterValue;
+					return isWithinInterval(columnDate,{ start: from, end: to || from });
+				}
+			},
+			{
+				accessorKey: 'status',
+				id: 'status',
+				header: "Status",
+				meta: {
+					filterVariant: 'select',
+				},
+			}
+		],
+		[]
+	)
+
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-between p-24">
-			<DataTable
-				searchableColumns={[
-					{
-						id: "Name",
-						title: "Name"
-					}
-				]}
-				filterableColumns={[
-					{
-						options: [
-							{
-								label: "Yes",
-								value: "Yes"
-							},
-							{
-								label: "No",
-								value: "No"
-							}
-						],
-						id: "IsDefault",
-						title: "Is Default?"
-					}
-				]}
-				columns={columns}
-				data={data}/>
-		</main>
+		<AdvancedDataTable columns={columns} data={data} exportFileName={filename}/>
 	);
 }

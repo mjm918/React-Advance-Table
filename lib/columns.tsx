@@ -1,64 +1,27 @@
-import {Checkbox} from "@/components/ui/checkbox";
-import {ColumnDef} from "@tanstack/react-table";
-import {DataTableColumnHeader} from "@/components/data-table/data-table-column-header";
+"use client";
 
-export function getColumns(): ColumnDef<DataType>[] {
-	return [
-		{
-			id: "select",
-			header: ({ table }) => (
-				<Checkbox
-					checked={
-						table.getIsAllPageRowsSelected() ||
-						(table.getIsSomePageRowsSelected() && "indeterminate")
-					}
-					onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-					aria-label="Select all"
-					className="translate-y-0.5"
-				/>
-			),
-			cell: ({ row }) => (
-				<Checkbox
-					checked={row.getIsSelected()}
-					onCheckedChange={(value) => row.toggleSelected(!!value)}
-					aria-label="Select row"
-					className="translate-y-0.5"
-				/>
-			),
-			enableSorting: false,
-			enableHiding: false,
-		},
-		{
-			accessorKey: "Name",
-			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Name" />
-			),
-			cell: ({ row }) => <div className="w-20">{row.getValue("Name")}</div>,
-			enableSorting: false,
-			enableHiding: false,
-		},
-		{
-			accessorKey: "Remark",
-			header: ({column}) => (
-				<DataTableColumnHeader column={column} title="Remark"/>
-			),
-			cell: ({row}) => <div className="w-20">{row.getValue("Remark")}</div>,
-		},
-		{
-			accessorKey: "IsDefault",
-			header: ({column }) => (
-				<DataTableColumnHeader column={column} title="IsDefault" />
-			),
-			cell: ({ row }) => {
-				return (
-					<div className="flex w-[6.25rem] items-center">
-						<span className="capitalize">{row.getValue("IsDefault")}</span>
-					</div>
-				)
-			},
-			filterFn: (row, id, value) => {
-				return Array.isArray(value) && value.includes(row.getValue(id))
-			},
-		}
-	]
+import {Column} from "@tanstack/react-table";
+import {CSSProperties} from "react";
+
+export function getCommonPinningStyles<T>(column: Column<T>): CSSProperties {
+	const isPinned = column.getIsPinned()
+	const isLastLeftPinnedColumn =
+		isPinned === 'left' && column.getIsLastColumn('left')
+	const isFirstRightPinnedColumn =
+		isPinned === 'right' && column.getIsFirstColumn('right')
+
+	return {
+		boxShadow: isLastLeftPinnedColumn
+			? '-4px 0 4px -4px gray inset'
+			: isFirstRightPinnedColumn
+				? '4px 0 4px -4px gray inset'
+				: undefined,
+		left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+		right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+		opacity: isPinned ? 0.95 : 1,
+		position: isPinned ? 'sticky' : 'relative',
+		background: "white",
+		width: column.getSize(),
+		zIndex: isPinned ? 1 : 0,
+	}
 }
