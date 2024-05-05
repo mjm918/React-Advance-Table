@@ -9,13 +9,13 @@ import {
 	getFacetedUniqueValues,
 	getFilteredRowModel,
 	getPaginationRowModel,
-	getSortedRowModel,
+	getSortedRowModel, Row,
 	useReactTable,
 	VisibilityState
 } from "@tanstack/react-table";
 import {useDataTableStore} from "@/store/dataTableStore";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {fuzzyFilter} from "@/lib/utils";
 import {
 	closestCenter,
@@ -39,6 +39,8 @@ import {DataTablePagination} from "@/components/data-table/data-table-pagination
 import {DataTableFloatingBar} from "@/components/data-table/data-table-floating-bar";
 import {FilterFn} from "@tanstack/table-core";
 import {RankingInfo} from "@tanstack/match-sorter-utils";
+import {SlashIcon} from "lucide-react";
+import {DataTableSelections} from "@/components/data-table/data-table-selections";
 
 declare module '@tanstack/react-table' {
 	interface ColumnMeta<TData, TValue> {
@@ -55,11 +57,23 @@ declare module '@tanstack/react-table' {
 interface IAdvancedDataTable<T> {
 	columns: ColumnDef<T>[];
 	data: T[];
-	exportFileName: string;
+	exportProps?: {
+		exportFileName: string;
+		excludeColumns?: string[];
+		onUserExport?: (data: T[])=> void;
+	};
+	actionProps?: {
+		onDelete?: (rows: T[])=> void;
+		onUserExport?: (rows: T[])=> void;
+	}
 }
 
-export function AdvancedDataTable<T>({columns,data, exportFileName}:IAdvancedDataTable<T>) {
-	const {isSelecting} = useDataTableStore(state => ({
+export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
+	const {
+		columns,
+		data
+	} = props;
+	const {isSelecting, setExportConfig} = useDataTableStore(state => ({
 		...state
 	}));
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -71,22 +85,41 @@ export function AdvancedDataTable<T>({columns,data, exportFileName}:IAdvancedDat
 	const [columnOrder, setColumnOrder] = useState<string[]>(() =>
 		columns.map(c => c.id!)
 	)
+	const [internalColumns, setInternalColumns] = useState<ColumnDef<T>[]>([]);
 	const [globalFilter, setGlobalFilter] = useState("")
+	const [rowSelection, setRowSelection] = useState({})
+
+	useEffect(()=>{
+		if (isSelecting) {
+			setInternalColumns(columns);
+		} else {
+			setInternalColumns(columns.filter(item=> item.id !== "select"));
+		}
+	},[columns, isSelecting]);
+
+	useEffect(()=>{
+		if (props.exportProps) {
+			setExportConfig(props.exportProps?.exportFileName ?? "", props.exportProps?.excludeColumns ?? []);
+		}
+	},[props.exportProps]);
+
 	const table = useReactTable({
 		data,
-		columns,
+		columns: internalColumns,
 		state: {
 			columnFilters,
 			columnOrder,
 			columnVisibility,
 			columnPinning,
-			globalFilter
+			globalFilter,
+			rowSelection
 		},
 		filterFns: {
 			fuzzy: fuzzyFilter
 		},
 		globalFilterFn: "fuzzy",
 		onGlobalFilterChange: setGlobalFilter,
+		onRowSelectionChange: setRowSelection,
 		onColumnVisibilityChange: setColumnVisibility,
 		onColumnPinningChange: setColumnPinning,
 		onColumnOrderChange: setColumnOrder,
@@ -118,7 +151,7 @@ export function AdvancedDataTable<T>({columns,data, exportFileName}:IAdvancedDat
 	)
 
 	const isFiltered = table.getState().columnFilters.length > 0 || !!table.getState().globalFilter
-
+	const isRowSelected = table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
 	return (
 		<DndContext
 			collisionDetection={closestCenter}
@@ -136,7 +169,16 @@ export function AdvancedDataTable<T>({columns,data, exportFileName}:IAdvancedDat
 						/>
 					</div>
 					<div className={"flex flex-row items-center"}>
-						<DataTableExport table={table} filename={exportFileName}/>
+						{
+							props?.exportProps && (
+								<DataTableExport
+									table={table}
+									onUserExport={props.exportProps.onUserExport}
+								/>
+							)
+						}
+						<SlashIcon className={"w-4 h-4 text-slate-500"}/>
+						<DataTableSelections table={table}/>
 						<DataTableColumnVisibility table={table}/>
 					</div>
 				</div>
@@ -161,7 +203,12 @@ export function AdvancedDataTable<T>({columns,data, exportFileName}:IAdvancedDat
 				<div className="h-2"/>
 				<DataTablePagination table={table}/>
 			</div>
-			{isFiltered ? <DataTableFloatingBar table={table}/> : null}
+			{(isFiltered || isRowSelected) && (
+				<DataTableFloatingBar<T>
+					onUserExport={props.actionProps?.onUserExport}
+					onDelete={props.actionProps?.onDelete}
+					table={table}/>
+			)}
 		</DndContext>
 	)
 }

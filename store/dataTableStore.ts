@@ -4,16 +4,24 @@ import {createStore as createZustandStore, useStore as useZustandStore} from "zu
 
 export interface IDataTableStore {
 	isSelecting: boolean;
+	exportFilename: string;
+	exportExcludeColumns: string[];
 }
 
-const getDefaultState = (): IDataTableStore => ({ isSelecting: false });
+const getDefaultState = (): IDataTableStore => ({ isSelecting: false, exportFilename: "", exportExcludeColumns: [] });
 
 export const createDataTableStore = (preloadedState: IDataTableStore) => {
 	return createZustandStore(combine({...getDefaultState(), ...preloadedState},(set, get, store)=>({
-		setLanguage: (props: boolean) => {
-			set({
-				isSelecting: props
-			});
+		toggleSelection: () => {
+			set(prev=>({
+				isSelecting: !prev.isSelecting
+			}));
+		},
+		setExportConfig: (filename: string, excludeColumns: string[]) => {
+			set(()=>({
+				exportFilename: filename,
+				exportExcludeColumns: excludeColumns
+			}));
 		}
 	})));
 };

@@ -33,14 +33,15 @@ import {
 	ContextMenuTrigger
 } from "@/components/ui/context-menu";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {useDataTableStore} from "@/store/dataTableStore";
 
 export function DataTableHeader<T>({ header }: { header: Header<T, unknown>; }) {
+	const {isSelecting} = useDataTableStore(state => ({...state}));
 	const { attributes, isDragging, listeners, setNodeRef, transform } =
 		useSortable({
 			id: header.column.id,
 		});
 	const { column, isPlaceholder } = header;
-	const {filterVariant} = column.columnDef.meta ?? {};
 
 	const pinStyle = getCommonPinningStyles(column);
 	const combinedStyles: CSSProperties = {
@@ -54,9 +55,23 @@ export function DataTableHeader<T>({ header }: { header: Header<T, unknown>; }) 
 		...(pinStyle || {})
 	};
 
+	if (isSelecting) {
+		return (
+			<TableHead
+				className={"text-slate-500 text-xs"}
+				colSpan={header.colSpan}
+				ref={setNodeRef}>
+				{flexRender(
+					column.columnDef.header,
+					header.getContext()
+				)}
+			</TableHead>
+		);
+	}
+
 	return (
 		<TableHead
-			className={"p-0 pr-1"}
+			className={"p-0 pl-1"}
 			colSpan={header.colSpan}
 			ref={setNodeRef}
 			style={combinedStyles}>

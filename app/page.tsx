@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import {useMemo, useState} from "react";
+import {HTMLProps, useMemo, useState} from "react";
 import {ColumnDef} from '@tanstack/react-table';
 import {makeData, Person} from "@/lib/makeData";
 import {isWithinInterval} from "date-fns";
 import {AdvancedDataTable} from "@/components/data-table";
+import {DataTableCheckBox} from "@/components/data-table/data-table-checkbox";
 
 export default function Home() {
 	const filename = "exampleExport";
@@ -13,10 +14,33 @@ export default function Home() {
 	const columns = useMemo<ColumnDef<Person, any>[]>(
 		() => [
 			{
+				id: 'select',
+				header: ({ table }) => (
+					<DataTableCheckBox
+						{...{
+							checked: table.getIsAllRowsSelected(),
+							indeterminate: table.getIsSomeRowsSelected(),
+							onChange: table.getToggleAllRowsSelectedHandler(),
+						}}
+					/>
+				),
+				cell: ({ row }) => (
+					<DataTableCheckBox
+						{...{
+							checked: row.getIsSelected(),
+							disabled: !row.getCanSelect(),
+							indeterminate: row.getIsSomeSelected(),
+							onChange: row.getToggleSelectedHandler(),
+						}}
+					/>
+				),
+				size: 20
+			},
+			{
 				header: "First Name",
 				accessorKey: 'firstName',
 				id: 'firstName',
-				cell: info => info.getValue(),
+				cell: info => info.getValue()
 			},
 			{
 				accessorFn: row => row.lastName,
@@ -70,6 +94,17 @@ export default function Home() {
 	)
 
 	return (
-		<AdvancedDataTable columns={columns} data={data} exportFileName={filename}/>
+		<AdvancedDataTable<Person>
+			columns={columns}
+			data={data}
+			exportProps={{
+				exportFileName: filename
+			}}
+			actionProps={{
+				onDelete:(props)=> {
+					console.log(props);
+				}
+			}}
+		/>
 	);
 }

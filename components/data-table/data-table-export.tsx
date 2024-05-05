@@ -4,38 +4,22 @@ import {Table} from "@tanstack/react-table";
 import {utils, writeFile} from "xlsx";
 import {DownloadIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
+import {useDataTableStore} from "@/store/dataTableStore";
+import {exportExcel, exportExcelData} from "@/lib/exportExcel";
 
-export function DataTableExport<T>({table, filename, onUserExport}: {table:Table<T>; filename: string; onUserExport?: (data: T[])=> void;}) {
+interface IDataTableExport<T> {
+	table:Table<T>;
+	onUserExport?: (data: T[])=> void;
+}
+
+export function DataTableExport<T>({table, onUserExport}: IDataTableExport<T>) {
+	const {exportExcludeColumns: excludeColumns, exportFilename: filename} = useDataTableStore(state => ({...state}));
 	const onPress = () => {
-		const temp = table.options.data;
-		const data: T[] = [];
-		const columns = table.getAllColumns();
-		const naming: { [k: string]: any } = {};
-		for (let i = 0; i < columns.length; i++) {
-			const col = columns[i];
-			naming[col.id] = col.columnDef.header;
-		}
-		temp.forEach(item=>{
-			const obj = item as {[K:string]: any};
-			const tempObj: { [k: string]: any } = {};
-			for (const objKey in obj) {
-				if (Object.hasOwn(naming,objKey)) {
-					tempObj[naming[objKey]] = obj[objKey];
-				}
-			}
-			data.push(tempObj as T);
-		});
+		const data = exportExcelData(table.options.data, table.getAllColumns(), excludeColumns);
 		if (onUserExport) {
 			onUserExport(data);
 		} else {
-			try {
-				const wb = utils.book_new();
-				const ws = utils.json_to_sheet(data);
-				utils.book_append_sheet(wb, ws, "Exported");
-				writeFile(wb, filename.concat(".xlsx"));
-			} catch (ex: any) {
-				alert(ex.message);
-			}
+			exportExcel(data, filename);
 		}
 	};
 
