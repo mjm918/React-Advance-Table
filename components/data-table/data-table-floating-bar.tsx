@@ -22,7 +22,7 @@ interface IDataTableFloatingBar<T> {
 }
 
 export function DataTableFloatingBar<T>({table, onUserExport, onDelete}:IDataTableFloatingBar<T>) {
-	const {exportFilename, exportExcludeColumns} = useDataTableStore(state => ({...state}));
+	const {exportProps} = useDataTableStore(state => ({...state}));
 	const isFiltered = table.getState().columnFilters.length > 0 || !!table.getState().globalFilter;
 	const isRowSelected = table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
 
@@ -36,11 +36,11 @@ export function DataTableFloatingBar<T>({table, onUserExport, onDelete}:IDataTab
 	};
 	const onExport = () => {
 		const rows = table.getSelectedRowModel().rows.map(item=>item.original);
+		const data = exportExcelData(rows, table.getAllColumns(), exportProps?.excludeColumns ?? []);
 		if (onUserExport) {
-			const data = exportExcelData(rows, table.getAllColumns(), exportExcludeColumns);
 			onUserExport(data);
 		} else {
-			exportExcel(rows, exportFilename);
+			exportExcel(data, exportProps?.exportFileName ?? "");
 		}
 	};
 
@@ -111,7 +111,7 @@ function RequestDeleteConfirmation({children, onConfirm}:{children: ReactNode;on
 				<AlertDialogHeader>
 					<AlertDialogTitle>This will permanently delete all selected rows. Are you sure you want to proceed?</AlertDialogTitle>
 					<AlertDialogDescription>
-						Are you sure you want to delete all selected rows? You won't be able to undo this action.
+						Are you sure you want to delete all selected rows? You won&apos;t be able to undo this action.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>

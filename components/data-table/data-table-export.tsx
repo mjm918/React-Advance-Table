@@ -13,13 +13,13 @@ interface IDataTableExport<T> {
 }
 
 export function DataTableExport<T>({table, onUserExport}: IDataTableExport<T>) {
-	const {exportExcludeColumns: excludeColumns, exportFilename: filename} = useDataTableStore(state => ({...state}));
+	const {exportProps} = useDataTableStore(state => ({...state}));
 	const onPress = () => {
-		const data = exportExcelData(table.options.data, table.getAllColumns(), excludeColumns);
+		const data = exportExcelData(table.options.data, table.getAllColumns(), exportProps?.excludeColumns ?? []);
 		if (onUserExport) {
 			onUserExport(data);
 		} else {
-			exportExcel(data, filename);
+			exportExcel(data, exportProps?.exportFileName ?? "");
 		}
 	};
 

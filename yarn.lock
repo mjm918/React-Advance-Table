@@ -725,6 +725,18 @@
   dependencies:
     remove-accents "0.5.0"
 
+"@tanstack/query-core@5.34.2":
+  version "5.34.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.34.2.tgz#ccaafad3be1126966e0e2064ff4acbfccad7add0"
+  integrity sha512-FM1UXldYcoMiWmVbpewV14EVpnr/ETBbdF84tmCktx29e2bXBFhGtAfyDHUD4X1FehaV5tC9GkXZUMZRQV3lcA==
+
+"@tanstack/react-query@^5.34.2":
+  version "5.34.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.34.2.tgz#673cebb16c1ddd44277a968c5aeb3a2ac76f9598"
+  integrity sha512-5L9W9XQ/lRcyhlVN0xrOkPZE9PJxZWw7BdJR244j3G7sxMfSreZWvxx13DJt08M5DWn9B5VstpKgqpIIQOIJKA==
+  dependencies:
+    "@tanstack/query-core" "5.34.2"
+
 "@tanstack/react-table@^8.16.0":
   version "8.16.0"
   resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.16.0.tgz#92151210ff99d6925353d7a2205735d9c31af48c"
@@ -753,6 +765,11 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
+
+"@types/lodash@^4.17.1":
+  version "4.17.1"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.1.tgz#0fabfcf2f2127ef73b119d98452bd317c4a17eb8"
+  integrity sha512-X+2qazGS3jxLAIz5JDXDzglAF3KpijdhFxlf/V1+hEsOUc+HnWi81L/uv/EvGuV90WY+7mPGFCUDGfQC3Gj95Q==
 
 "@types/node@^20":
   version "20.12.7"
@@ -1978,6 +1995,11 @@ hasown@^2.0.0, hasown@^2.0.1, hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
+hotkeys-js@^3.13.2:
+  version "3.13.7"
+  resolved "https://registry.yarnpkg.com/hotkeys-js/-/hotkeys-js-3.13.7.tgz#0188d8e2fca16a3f1d66541b48de0bb9df613726"
+  integrity sha512-ygFIdTqqwG4fFP7kkiYlvayZppeIQX2aPpirsngkv1xM1lP0piDY5QEh68nQnIKvz64hfocxhBaD/uK3sSK1yQ==
+
 ignore@^5.2.0:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.3.1.tgz#5073e554cd42c5b33b394375f538b8593e34d4ef"
@@ -2339,6 +2361,11 @@ lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
+
+lodash@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
@@ -2737,6 +2764,14 @@ react-dom@^18:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.2"
+
+react-hot-keys@^2.7.3:
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/react-hot-keys/-/react-hot-keys-2.7.3.tgz#4af8ab2f8087782b09d07a3075f985b37d12dee9"
+  integrity sha512-OoX1kTookqQx/OBXBgBLQCANpw3KGUcJNOl+MNv8xJYyH/Rojv+jTjQbksDGQMIOWVfvLqOZi/ZVcVdsWUAUWg==
+  dependencies:
+    hotkeys-js "^3.13.2"
+    prop-types "^15.8.1"
 
 react-is@^16.13.1:
   version "16.13.1"

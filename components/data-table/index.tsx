@@ -41,6 +41,7 @@ import {FilterFn} from "@tanstack/table-core";
 import {RankingInfo} from "@tanstack/match-sorter-utils";
 import {SlashIcon} from "lucide-react";
 import {DataTableSelections} from "@/components/data-table/data-table-selections";
+import {TDataTableContextMenuProps, TDataTableExportProps} from "@/@types";
 
 declare module '@tanstack/react-table' {
 	interface ColumnMeta<TData, TValue> {
@@ -57,15 +58,13 @@ declare module '@tanstack/react-table' {
 interface IAdvancedDataTable<T> {
 	columns: ColumnDef<T>[];
 	data: T[];
-	exportProps?: {
-		exportFileName: string;
-		excludeColumns?: string[];
-		onUserExport?: (data: T[])=> void;
-	};
+	exportProps?: TDataTableExportProps;
 	actionProps?: {
 		onDelete?: (rows: T[])=> void;
 		onUserExport?: (rows: T[])=> void;
-	}
+	};
+	contextMenuProps?: TDataTableContextMenuProps;
+	onRowClick?: (prop: T) => void;
 }
 
 export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
@@ -73,7 +72,7 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 		columns,
 		data
 	} = props;
-	const {isSelecting, setExportConfig} = useDataTableStore(state => ({
+	const {isSelecting, setExtraProps} = useDataTableStore(state => ({
 		...state
 	}));
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -98,10 +97,8 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 	},[columns, isSelecting]);
 
 	useEffect(()=>{
-		if (props.exportProps) {
-			setExportConfig(props.exportProps?.exportFileName ?? "", props.exportProps?.excludeColumns ?? []);
-		}
-	},[props.exportProps]);
+		setExtraProps(props.exportProps, props.contextMenuProps);
+	},[props]);
 
 	const table = useReactTable({
 		data,
@@ -198,7 +195,7 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 							</TableRow>
 						))}
 					</TableHeader>
-					<DataTableBody table={table} columnOrder={columnOrder}/>
+					<DataTableBody onClick={props?.onRowClick} table={table} columnOrder={columnOrder}/>
 				</Table>
 				<div className="h-2"/>
 				<DataTablePagination table={table}/>

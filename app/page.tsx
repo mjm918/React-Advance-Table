@@ -105,6 +105,18 @@ export default function Home() {
 					console.log(props);
 				}
 			}}
+			onRowClick={(prop)=>{
+				console.log(prop);
+			}}
+			contextMenuProps={{
+				enableEdit: true,
+				enableDelete: true,
+				extra: {
+					"Copy to clipboard": (data)=> {
+						console.log("are we here?",data);
+					}
+				}
+			}}
 		/>
 	);
 }

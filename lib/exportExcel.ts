@@ -1,6 +1,6 @@
 "use client";
 
-import {Column, Table} from "@tanstack/react-table";
+import {Column} from "@tanstack/react-table";
 import {utils, writeFile} from "xlsx";
 
 export function exportExcelData<T>(rows: T[], columns: Column<T>[], excludeColumns: string[]): T[] {
@@ -8,7 +8,7 @@ export function exportExcelData<T>(rows: T[], columns: Column<T>[], excludeColum
 	const naming: { [k: string]: any } = {};
 	for (let i = 0; i < columns.length; i++) {
 		const col = columns[i];
-		if (!excludeColumns.includes(col.id)) {
+		if (excludeColumns.length > 0 && excludeColumns.includes(col.id)) {
 			continue;
 		}
 		naming[col.id] = col.columnDef.header;

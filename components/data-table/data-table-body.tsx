@@ -4,19 +4,25 @@ import {horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable"
 import {DataTableCell} from "@/components/data-table/data-table-cell";
 import * as React from "react";
 
-export function DataTableBody<T>({table, columnOrder}:{table: Table<T>; columnOrder: string[]}) {
+interface IDataTableBody<T> {
+	table: Table<T>;
+	columnOrder: string[];
+	onClick?: (prop: T) => void;
+}
+export function DataTableBody<T>(props:IDataTableBody<T>) {
+	const {table, columnOrder} = props;
 	return (
 		<TableBody>
 			{table.getRowModel().rows.map(row => {
 				return (
-					<TableRow key={row.id}>
+					<TableRow onClick={()=>props.onClick && props.onClick(row.original)} key={row.id} className={props.onClick ? "cursor-pointer" : ""}>
 						{row.getVisibleCells().map(cell => {
 							return (
 								<SortableContext
 									key={cell.id}
 									items={columnOrder}
 									strategy={horizontalListSortingStrategy}>
-									<DataTableCell cell={cell} key={cell.id}/>
+									<DataTableCell onEdit={()=>console.log("edit")} cell={cell} key={cell.id}/>
 								</SortableContext>
 							)
 						})}

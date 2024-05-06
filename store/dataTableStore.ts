@@ -1,14 +1,15 @@
 import {createContext, useContext} from "react";
 import {combine} from "zustand/middleware";
 import {createStore as createZustandStore, useStore as useZustandStore} from "zustand";
+import {TDataTableContextMenuProps, TDataTableExportProps} from "@/@types";
 
 export interface IDataTableStore {
 	isSelecting: boolean;
-	exportFilename: string;
-	exportExcludeColumns: string[];
+	exportProps?: TDataTableExportProps;
+	contextMenuProps?: TDataTableContextMenuProps;
 }
 
-const getDefaultState = (): IDataTableStore => ({ isSelecting: false, exportFilename: "", exportExcludeColumns: [] });
+const getDefaultState = (): IDataTableStore => ({ isSelecting: false, exportProps: undefined, contextMenuProps: undefined });
 
 export const createDataTableStore = (preloadedState: IDataTableStore) => {
 	return createZustandStore(combine({...getDefaultState(), ...preloadedState},(set, get, store)=>({
@@ -17,10 +18,10 @@ export const createDataTableStore = (preloadedState: IDataTableStore) => {
 				isSelecting: !prev.isSelecting
 			}));
 		},
-		setExportConfig: (filename: string, excludeColumns: string[]) => {
+		setExtraProps: (exportProps: TDataTableExportProps | undefined, contextMenuProps: TDataTableContextMenuProps | undefined) => {
 			set(()=>({
-				exportFilename: filename,
-				exportExcludeColumns: excludeColumns
+				exportProps,
+				contextMenuProps
 			}));
 		}
 	})));
