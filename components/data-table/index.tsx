@@ -7,7 +7,7 @@ import {
 	getFacetedMinMaxValues,
 	getFacetedRowModel,
 	getFacetedUniqueValues,
-	getFilteredRowModel,
+	getFilteredRowModel, getPaginationRowModel,
 	getSortedRowModel,
 	PaginationState,
 	useReactTable,
@@ -42,10 +42,6 @@ import {RankingInfo} from "@tanstack/match-sorter-utils";
 import {SlashIcon} from "lucide-react";
 import {DataTableSelections} from "@/components/data-table/data-table-selections";
 import {TDataTableContextMenuProps, TDataTableExportProps} from "@/@types";
-import {
-	keepPreviousData,
-	useQuery,
-} from "@tanstack/react-query";
 import _ from "lodash";
 
 declare module '@tanstack/react-table' {
@@ -60,16 +56,10 @@ declare module '@tanstack/react-table' {
 	}
 }
 
-export type TAdvancedDataTableDataProps<T> = {
-	rowCount: number;
-	pageCount: number;
-	rows: T[]
-}
-
 export interface IAdvancedDataTable<T> {
 	id: string;
 	columns: ColumnDef<T>[];
-	onFetch: (page: PaginationState)=> Promise<TAdvancedDataTableDataProps<T>>;
+	data: T[];
 	exportProps?: TDataTableExportProps;
 	actionProps?: {
 		onDelete?: (rows: T[])=> void;
@@ -82,7 +72,7 @@ export interface IAdvancedDataTable<T> {
 export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 	const {
 		columns,
-		onFetch,
+		data,
 		id
 	} = props;
 	if (_.isEmpty(id.trim())) {
@@ -91,10 +81,6 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 	const {isSelecting, setExtraProps} = useDataTableStore(state => ({
 		...state
 	}));
-	const [pagination, setPagination] = useState<PaginationState>({
-		pageIndex: 0,
-		pageSize: 100,
-	})
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
 		[]
 	)
@@ -120,16 +106,8 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 		setExtraProps(props.exportProps, props.contextMenuProps);
 	},[props]);
 
-	const { data, isFetching, status } = useQuery({
-		queryKey: [id, pagination],
-		queryFn: () => onFetch(pagination),
-		placeholderData: keepPreviousData, // don't have 0 rows flash while changing pages/loading next page
-	})
-	const defaultData = useMemo(() => [], [])
-
 	const table = useReactTable({
-		data: data?.rows ?? defaultData,
-		rowCount: data?.rowCount,
+		data: data,
 		columns: internalColumns,
 		state: {
 			columnFilters,
@@ -137,14 +115,12 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 			columnVisibility,
 			columnPinning,
 			globalFilter,
-			rowSelection,
-			pagination
+			rowSelection
 		},
 		filterFns: {
 			fuzzy: fuzzyFilter
 		},
 		globalFilterFn: "fuzzy",
-		onPaginationChange: setPagination,
 		onGlobalFilterChange: setGlobalFilter,
 		onRowSelectionChange: setRowSelection,
 		onColumnVisibilityChange: setColumnVisibility,
@@ -154,11 +130,10 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(), //client-side filtering
 		getSortedRowModel: getSortedRowModel(),
-		// getPaginationRowModel: getPaginationRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
 		getFacetedRowModel: getFacetedRowModel(), // client-side faceting
 		getFacetedUniqueValues: getFacetedUniqueValues(), // generate unique values for select filter/autocomplete
 		getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for range filter
-		manualPagination: true,
 	});
 
 	function onDragEnd(event: DragEndEvent) {

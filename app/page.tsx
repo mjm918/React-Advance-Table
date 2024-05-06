@@ -7,7 +7,7 @@ import {makeData, Person, simulateFetch} from "@/lib/makeData";
 import {isWithinInterval} from "date-fns";
 import {AdvancedDataTable} from "@/components/data-table";
 import {DataTableCheckBox} from "@/components/data-table/data-table-checkbox";
-
+const data = makeData(100_000);
 export default function Home() {
 	const filename = "exampleExport";
 	const columns = useMemo<ColumnDef<Person, any>[]>(
@@ -96,9 +96,7 @@ export default function Home() {
 		<AdvancedDataTable<Person>
 			id={"example-advance-table"}
 			columns={columns}
-			onFetch={async (page)=>{
-				return await simulateFetch({...page});
-			}}
+			data={data}
 			exportProps={{
 				exportFileName: filename
 			}}
