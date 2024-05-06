@@ -1,16 +1,15 @@
 "use client";
 
 import * as React from "react";
-import {HTMLProps, useMemo, useState} from "react";
+import {useMemo, useState} from "react";
 import {ColumnDef} from '@tanstack/react-table';
-import {makeData, Person} from "@/lib/makeData";
+import {makeData, Person, simulateFetch} from "@/lib/makeData";
 import {isWithinInterval} from "date-fns";
 import {AdvancedDataTable} from "@/components/data-table";
 import {DataTableCheckBox} from "@/components/data-table/data-table-checkbox";
 
 export default function Home() {
 	const filename = "exampleExport";
-	const [data, setData] = useState<Person[]>(() => makeData(5_000))
 	const columns = useMemo<ColumnDef<Person, any>[]>(
 		() => [
 			{
@@ -95,8 +94,11 @@ export default function Home() {
 
 	return (
 		<AdvancedDataTable<Person>
+			id={"example-advance-table"}
 			columns={columns}
-			data={data}
+			onFetch={async (page)=>{
+				return await simulateFetch({...page});
+			}}
 			exportProps={{
 				exportFileName: filename
 			}}

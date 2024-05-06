@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import {TAdvancedDataTableDataProps} from "@/components/data-table";
 
 export type Person = {
 	firstName: string
@@ -45,4 +46,23 @@ export function makeData(...lens: number[]) {
 	}
 
 	return makeDataLevel()
+}
+
+const data = makeData(100_000)
+
+export async function simulateFetch(options: {
+	pageIndex: number
+	pageSize: number
+}): Promise<TAdvancedDataTableDataProps<Person>> {
+	// Simulate some network latency
+	await new Promise(r => setTimeout(r, 1000))
+
+	return {
+		rows: data.slice(
+			options.pageIndex * options.pageSize,
+			(options.pageIndex + 1) * options.pageSize
+		),
+		pageCount: Math.ceil(data.length / options.pageSize),
+		rowCount: data.length,
+	}
 }

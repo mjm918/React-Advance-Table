@@ -8,14 +8,14 @@ import {
 	getFacetedRowModel,
 	getFacetedUniqueValues,
 	getFilteredRowModel,
-	getPaginationRowModel,
-	getSortedRowModel, Row,
+	getSortedRowModel,
+	PaginationState,
 	useReactTable,
 	VisibilityState
 } from "@tanstack/react-table";
 import {useDataTableStore} from "@/store/dataTableStore";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {fuzzyFilter} from "@/lib/utils";
 import {
 	closestCenter,
@@ -42,6 +42,11 @@ import {RankingInfo} from "@tanstack/match-sorter-utils";
 import {SlashIcon} from "lucide-react";
 import {DataTableSelections} from "@/components/data-table/data-table-selections";
 import {TDataTableContextMenuProps, TDataTableExportProps} from "@/@types";
+import {
+	keepPreviousData,
+	useQuery,
+} from "@tanstack/react-query";
+import _ from "lodash";
 
 declare module '@tanstack/react-table' {
 	interface ColumnMeta<TData, TValue> {
@@ -55,9 +60,16 @@ declare module '@tanstack/react-table' {
 	}
 }
 
-interface IAdvancedDataTable<T> {
+export type TAdvancedDataTableDataProps<T> = {
+	rowCount: number;
+	pageCount: number;
+	rows: T[]
+}
+
+export interface IAdvancedDataTable<T> {
+	id: string;
 	columns: ColumnDef<T>[];
-	data: T[];
+	onFetch: (page: PaginationState)=> Promise<TAdvancedDataTableDataProps<T>>;
 	exportProps?: TDataTableExportProps;
 	actionProps?: {
 		onDelete?: (rows: T[])=> void;
@@ -70,11 +82,19 @@ interface IAdvancedDataTable<T> {
 export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 	const {
 		columns,
-		data
+		onFetch,
+		id
 	} = props;
+	if (_.isEmpty(id.trim())) {
+		throw new Error("AdvancedDataTable required field missing `id`. Must be an unique identifier");
+	}
 	const {isSelecting, setExtraProps} = useDataTableStore(state => ({
 		...state
 	}));
+	const [pagination, setPagination] = useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 100,
+	})
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
 		[]
 	)
@@ -100,8 +120,16 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 		setExtraProps(props.exportProps, props.contextMenuProps);
 	},[props]);
 
+	const { data, isFetching, status } = useQuery({
+		queryKey: [id, pagination],
+		queryFn: () => onFetch(pagination),
+		placeholderData: keepPreviousData, // don't have 0 rows flash while changing pages/loading next page
+	})
+	const defaultData = useMemo(() => [], [])
+
 	const table = useReactTable({
-		data,
+		data: data?.rows ?? defaultData,
+		rowCount: data?.rowCount,
 		columns: internalColumns,
 		state: {
 			columnFilters,
@@ -109,12 +137,14 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 			columnVisibility,
 			columnPinning,
 			globalFilter,
-			rowSelection
+			rowSelection,
+			pagination
 		},
 		filterFns: {
 			fuzzy: fuzzyFilter
 		},
 		globalFilterFn: "fuzzy",
+		onPaginationChange: setPagination,
 		onGlobalFilterChange: setGlobalFilter,
 		onRowSelectionChange: setRowSelection,
 		onColumnVisibilityChange: setColumnVisibility,
@@ -124,10 +154,11 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(), //client-side filtering
 		getSortedRowModel: getSortedRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
+		// getPaginationRowModel: getPaginationRowModel(),
 		getFacetedRowModel: getFacetedRowModel(), // client-side faceting
 		getFacetedUniqueValues: getFacetedUniqueValues(), // generate unique values for select filter/autocomplete
 		getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for range filter
+		manualPagination: true,
 	});
 
 	function onDragEnd(event: DragEndEvent) {
@@ -155,14 +186,14 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 			modifiers={[restrictToHorizontalAxis]}
 			onDragEnd={onDragEnd}
 			sensors={sensors}>
-			<div className="p-2 rounded mb-12">
+			<div className="p-2 rounded bg-white mb-12">
 				<div className={"flex flex-row items-center justify-between"}>
 					<div className={"flex flex-row items-center"}>
 						<DataTableInput
 							value={globalFilter ?? ''}
 							onChange={value => setGlobalFilter(String(value))}
 							className="p-2 font-lg shadow border border-block"
-							placeholder="Search anything..."
+							placeholder="Filter anything..."
 						/>
 					</div>
 					<div className={"flex flex-row items-center"}>
@@ -180,7 +211,7 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 					</div>
 				</div>
 				<Table className={"mt-2"}>
-					<TableHeader>
+					<TableHeader className={"sticky top-0"}>
 						{table.getHeaderGroups().map(headerGroup => (
 							<TableRow key={headerGroup.id}>
 								<SortableContext

@@ -59,7 +59,7 @@ export function DataTableCell<T>({cell, onEdit, onDelete}: IDataTableCellEdit<T>
 						{
 							contextMenuProps.enableEdit && (
 								<ContextMenuItem onClick={event => onContextMenuItemClick(event, onEdit)}>
-									Edit
+									Edit Row
 									<ReactHotkeys keyName={"command+e,control+e"} onKeyDown={()=>onEdit && onEdit()}>
 										<ContextMenuShortcut>
 											⌘ E
@@ -101,7 +101,7 @@ export function DataTableCell<T>({cell, onEdit, onDelete}: IDataTableCellEdit<T>
 						{
 							contextMenuProps.enableDelete && (
 								<ContextMenuItem onClick={event => onContextMenuItemClick(event,onDelete)}>
-									<span className={"text-red-500"}>Delete</span>
+									<span className={"text-red-500"}>Delete Row</span>
 									<ReactHotkeys keyName={"command+d,control+d"} onKeyDown={()=>onDelete && onDelete()}>
 										<ContextMenuShortcut>
 											<span className={"text-red-500"}>⌘ D</span>
