@@ -157,7 +157,7 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 			modifiers={[restrictToHorizontalAxis]}
 			onDragEnd={onDragEnd}
 			sensors={sensors}>
-			<div className="p-2 rounded bg-white mb-12">
+			<div className="rounded bg-white mb-12">
 				<div className={"flex flex-row items-center justify-between"}>
 					<div className={"flex flex-row items-center"}>
 						<DataTableInput

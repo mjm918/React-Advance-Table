@@ -3,10 +3,13 @@
 import * as React from "react";
 import {useEffect, useMemo, useState} from "react";
 import {ColumnDef, Table} from '@tanstack/react-table';
-import {makeData, Person, simulateFetch} from "@/lib/makeData";
+import {makeData, Person} from "@/lib/makeData";
 import {isWithinInterval} from "date-fns";
 import {AdvancedDataTable} from "@/components/data-table";
 import {DataTableCheckBox} from "@/components/data-table/data-table-checkbox";
+import {Button} from "@/components/ui/button";
+import {GitHubLogoIcon} from "@radix-ui/react-icons";
+import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 
 const data = makeData(100_000);
 export default function Home() {
@@ -102,31 +105,50 @@ export default function Home() {
 	},[]);
 
 	return (
-		<AdvancedDataTable<Person>
-			id={"example-advance-table"}
-			columns={columns}
-			data={data}
-			exportProps={{
-				exportFileName: filename
-			}}
-			actionProps={{
-				onDelete:(props)=> {
-					console.log(props);
-				}
-			}}
-			onRowClick={(prop)=>{
-				console.log(prop);
-			}}
-			contextMenuProps={{
-				enableEdit: true,
-				enableDelete: true,
-				extra: {
-					"Copy to clipboard": (data)=> {
-						console.log("are we here?",data);
+		<>
+			<Alert className={"mb-2"}>
+				<AlertTitle>
+					React Advance Table - Using TanStack Table
+				</AlertTitle>
+				<AlertDescription className={"text-slate-500 text-xs"}>
+					This is not a library or anything. Just an example of TanStack React Table.
+					<div className={"flex flex-row items-center max-w-64 float-right -mt-2"}>
+						<span className={"text-xs items-center"}>
+							Project available on
+						</span>
+						<Button className={"text-xs"} variant={"link"}>
+							<GitHubLogoIcon/>
+							<a className={"ml-1"} target={"_blank"} href={"https://github.com/mjm918/React-Advance-Table"}>Github</a>
+						</Button>
+					</div>
+				</AlertDescription>
+			</Alert>
+			<AdvancedDataTable<Person>
+				id={"example-advance-table"}
+				columns={columns}
+				data={data}
+				exportProps={{
+					exportFileName: filename
+				}}
+				actionProps={{
+					onDelete: (props) => {
+						console.log(props);
 					}
-				}
-			}}
-			isLoading={isLoading}
-		/>
+				}}
+				onRowClick={(prop) => {
+					console.log(prop);
+				}}
+				contextMenuProps={{
+					enableEdit: true,
+					enableDelete: true,
+					extra: {
+						"Copy to clipboard": (data) => {
+							console.log("are we here?", data);
+						}
+					}
+				}}
+				isLoading={isLoading}
+			/>
+		</>
 	);
 }

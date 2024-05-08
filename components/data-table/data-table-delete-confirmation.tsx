@@ -2,8 +2,12 @@
 
 import React, {ReactNode} from "react";
 import {
-	AlertDialog, AlertDialogAction, AlertDialogCancel,
-	AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
 	AlertDialogTrigger
