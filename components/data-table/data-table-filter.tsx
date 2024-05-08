@@ -1,3 +1,5 @@
+"use client";
+
 import {Column} from "@tanstack/react-table";
 import * as React from "react";
 import {useMemo} from "react";

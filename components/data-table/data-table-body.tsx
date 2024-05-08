@@ -1,14 +1,11 @@
-import {Table} from "@tanstack/react-table";
+"use client";
+
 import {TableBody, TableRow} from "@/components/ui/table";
 import {horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable";
 import {DataTableCell} from "@/components/data-table/data-table-cell";
 import * as React from "react";
+import {IDataTableBody} from "@/interface/IDataTable";
 
-interface IDataTableBody<T> {
-	table: Table<T>;
-	columnOrder: string[];
-	onClick?: (prop: T) => void;
-}
 export function DataTableBody<T>(props:IDataTableBody<T>) {
 	const {table, columnOrder} = props;
 	return (

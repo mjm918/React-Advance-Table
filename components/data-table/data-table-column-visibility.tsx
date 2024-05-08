@@ -1,8 +1,6 @@
 "use client"
 
 import {MixerHorizontalIcon} from "@radix-ui/react-icons"
-import type {Table} from "@tanstack/react-table"
-
 import {Button} from "@/components/ui/button"
 import {
 	DropdownMenu,
@@ -10,10 +8,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-
-interface DataTableViewOptionsProps<TData> {
-	table: Table<TData>
-}
+import {DataTableViewOptionsProps} from "@/interface/IDataTable";
 
 export function DataTableColumnVisibility<TData>({table}: DataTableViewOptionsProps<TData>) {
 	return (

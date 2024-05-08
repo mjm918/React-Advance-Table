@@ -1,16 +1,10 @@
 "use client";
 
-import {Table} from "@tanstack/react-table";
-import {utils, writeFile} from "xlsx";
 import {DownloadIcon} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {useDataTableStore} from "@/store/dataTableStore";
 import {exportExcel, exportExcelData} from "@/lib/exportExcel";
-
-interface IDataTableExport<T> {
-	table:Table<T>;
-	onUserExport?: (data: T[])=> void;
-}
+import {IDataTableExport} from "@/interface/IDataTable";
 
 export function DataTableExport<T>({table, onUserExport}: IDataTableExport<T>) {
 	const {exportProps} = useDataTableStore(state => ({...state}));

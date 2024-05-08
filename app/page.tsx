@@ -1,20 +1,22 @@
 "use client";
 
 import * as React from "react";
-import {useMemo, useState} from "react";
-import {ColumnDef} from '@tanstack/react-table';
+import {useEffect, useMemo, useState} from "react";
+import {ColumnDef, Table} from '@tanstack/react-table';
 import {makeData, Person, simulateFetch} from "@/lib/makeData";
 import {isWithinInterval} from "date-fns";
 import {AdvancedDataTable} from "@/components/data-table";
 import {DataTableCheckBox} from "@/components/data-table/data-table-checkbox";
+
 const data = makeData(100_000);
 export default function Home() {
+	const [isLoading, setLoading] = useState(true);
 	const filename = "exampleExport";
-	const columns = useMemo<ColumnDef<Person, any>[]>(
+	const columns = useMemo<ColumnDef<Person>[]>(
 		() => [
 			{
 				id: 'select',
-				header: ({ table }) => (
+				header: ({ table }: { table: Table<Person> }) => (
 					<DataTableCheckBox
 						{...{
 							checked: table.getIsAllRowsSelected(),
@@ -92,6 +94,13 @@ export default function Home() {
 		[]
 	)
 
+	useEffect(()=>{
+		const tmo = setTimeout(()=>{
+			setLoading(false);
+			clearTimeout(tmo);
+		},5000);
+	},[]);
+
 	return (
 		<AdvancedDataTable<Person>
 			id={"example-advance-table"}
@@ -117,6 +126,7 @@ export default function Home() {
 					}
 				}
 			}}
+			isLoading={isLoading}
 		/>
 	);
 }

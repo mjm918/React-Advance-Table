@@ -7,15 +7,15 @@ import {
 	getFacetedMinMaxValues,
 	getFacetedRowModel,
 	getFacetedUniqueValues,
-	getFilteredRowModel, getPaginationRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
 	getSortedRowModel,
-	PaginationState,
 	useReactTable,
 	VisibilityState
 } from "@tanstack/react-table";
 import {useDataTableStore} from "@/store/dataTableStore";
 import * as React from "react";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import {fuzzyFilter} from "@/lib/utils";
 import {
 	closestCenter,
@@ -41,8 +41,9 @@ import {FilterFn} from "@tanstack/table-core";
 import {RankingInfo} from "@tanstack/match-sorter-utils";
 import {SlashIcon} from "lucide-react";
 import {DataTableSelections} from "@/components/data-table/data-table-selections";
-import {TDataTableContextMenuProps, TDataTableExportProps} from "@/@types";
 import _ from "lodash";
+import {IAdvancedDataTable} from "@/interface/IDataTable";
+import {DataTableSkeleton} from "@/components/data-table/data-table-skeleton";
 
 declare module '@tanstack/react-table' {
 	interface ColumnMeta<TData, TValue> {
@@ -54,19 +55,6 @@ declare module '@tanstack/react-table' {
 	interface FilterMeta {
 		itemRank: RankingInfo
 	}
-}
-
-export interface IAdvancedDataTable<T> {
-	id: string;
-	columns: ColumnDef<T>[];
-	data: T[];
-	exportProps?: TDataTableExportProps;
-	actionProps?: {
-		onDelete?: (rows: T[])=> void;
-		onUserExport?: (rows: T[])=> void;
-	};
-	contextMenuProps?: TDataTableContextMenuProps;
-	onRowClick?: (prop: T) => void;
 }
 
 export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
@@ -155,6 +143,14 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 
 	const isFiltered = table.getState().columnFilters.length > 0 || !!table.getState().globalFilter
 	const isRowSelected = table.getIsSomeRowsSelected() || table.getIsAllRowsSelected();
+
+	if (props?.isLoading) {
+		return (
+			<DataTableSkeleton
+				columnCount={5}/>
+		);
+	}
+
 	return (
 		<DndContext
 			collisionDetection={closestCenter}
@@ -167,7 +163,7 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 						<DataTableInput
 							value={globalFilter ?? ''}
 							onChange={value => setGlobalFilter(String(value))}
-							className="p-2 font-lg shadow border border-block"
+							className="p-2 font-lg border border-block"
 							placeholder="Filter anything..."
 						/>
 					</div>
@@ -185,24 +181,26 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 						<DataTableColumnVisibility table={table}/>
 					</div>
 				</div>
-				<Table className={"mt-2"}>
-					<TableHeader className={"sticky top-0"}>
-						{table.getHeaderGroups().map(headerGroup => (
-							<TableRow key={headerGroup.id}>
-								<SortableContext
-									items={columnOrder}
-									strategy={horizontalListSortingStrategy}>
-									{headerGroup.headers.map(header => {
-										return (
-											<DataTableHeader key={header.id} header={header}/>
-										)
-									})}
-								</SortableContext>
-							</TableRow>
-						))}
-					</TableHeader>
-					<DataTableBody onClick={props?.onRowClick} table={table} columnOrder={columnOrder}/>
-				</Table>
+				<div className={"border mt-2 rounded-lg p-1"}>
+					<Table>
+						<TableHeader className={"sticky top-0"}>
+							{table.getHeaderGroups().map(headerGroup => (
+								<TableRow key={headerGroup.id}>
+									<SortableContext
+										items={columnOrder}
+										strategy={horizontalListSortingStrategy}>
+										{headerGroup.headers.map(header => {
+											return (
+												<DataTableHeader key={header.id} header={header}/>
+											)
+										})}
+									</SortableContext>
+								</TableRow>
+							))}
+						</TableHeader>
+						<DataTableBody onClick={props?.onRowClick} table={table} columnOrder={columnOrder}/>
+					</Table>
+				</div>
 				<div className="h-2"/>
 				<DataTablePagination table={table}/>
 			</div>
