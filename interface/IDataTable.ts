@@ -1,16 +1,17 @@
 import { z } from "zod";
 import {
-	Cell,
-	ColumnDef,
-	type Table
+    Cell,
+    ColumnDef,
+    type Table
 } from "@tanstack/react-table";
 import {
-	TDataTableAddDataProps,
-	TDataTableContextMenuProps,
-	TDataTableDataValidation,
-	TDataTableEditDataProps,
-	TDataTableExportProps
+    TDataTableAddDataProps,
+    TDataTableContextMenuProps,
+    TDataTableDataValidation,
+    TDataTableEditDataProps,
+    TDataTableExportProps
 } from "@/@types";
+import {VirtualItem, Virtualizer} from "@tanstack/virtual-core";
 
 export interface IAdvancedDataTable<T> {
 	id: string;
@@ -59,4 +60,8 @@ export interface IDataTableBody<T> {
 	table: Table<T>;
 	columnOrder: string[];
 	onClick?: (prop: T) => void;
+	rowVirtualizer: Virtualizer<HTMLDivElement, Element>;
+	virtualPaddingLeft: number | undefined;
+	virtualPaddingRight: number | undefined;
+	virtualColumns: VirtualItem[];
 }
