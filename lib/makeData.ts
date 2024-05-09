@@ -3,6 +3,9 @@ import { faker } from '@faker-js/faker'
 export type Person = {
 	firstName: string
 	lastName: string
+	jobType: string
+	address: string
+	locality: string
 	age: number
 	visits: number
 	lastUpdate: Date
@@ -22,6 +25,9 @@ const newPerson = (): Person => {
 	return {
 		firstName: faker.person.firstName(),
 		lastName: faker.person.lastName(),
+		jobType: faker.person.jobType(),
+		address: faker.location.streetAddress({useFullAddress: true}),
+		locality: faker.location.country(),
 		age: faker.number.int(40),
 		visits: faker.number.int(1000),
 		lastUpdate: faker.date.future(),

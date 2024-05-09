@@ -44,6 +44,7 @@ import {DataTableSelections} from "@/components/data-table/data-table-selections
 import _ from "lodash";
 import {IAdvancedDataTable} from "@/interface/IDataTable";
 import {DataTableSkeleton} from "@/components/data-table/data-table-skeleton";
+import {DataTableAddRow} from "@/components/data-table/data-table-add-row";
 
 declare module '@tanstack/react-table' {
 	interface ColumnMeta<TData, TValue> {
@@ -91,7 +92,13 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 	},[columns, isSelecting]);
 
 	useEffect(()=>{
-		setExtraProps(props.exportProps, props.contextMenuProps);
+		setExtraProps(
+			props?.exportProps,
+			props?.contextMenuProps,
+			props?.addDataProps,
+			props?.editDataProps,
+			props?.dataValidationProps
+		);
 	},[props]);
 
 	const table = useReactTable({
@@ -168,6 +175,10 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 						/>
 					</div>
 					<div className={"flex flex-row items-center"}>
+						<DataTableAddRow/>
+						<DataTableSelections table={table}/>
+						<DataTableColumnVisibility table={table}/>
+						<SlashIcon className={"w-4 h-4 text-slate-500"}/>
 						{
 							props?.exportProps && (
 								<DataTableExport
@@ -176,9 +187,6 @@ export function AdvancedDataTable<T>(props:IAdvancedDataTable<T>) {
 								/>
 							)
 						}
-						<SlashIcon className={"w-4 h-4 text-slate-500"}/>
-						<DataTableSelections table={table}/>
-						<DataTableColumnVisibility table={table}/>
 					</div>
 				</div>
 				<div className={"border mt-2 rounded-lg p-1"}>

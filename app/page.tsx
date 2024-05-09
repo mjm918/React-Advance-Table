@@ -53,6 +53,28 @@ export default function Home() {
 				header: "Last Name",
 			},
 			{
+				accessorFn: row => row.jobType,
+				id: 'jobType',
+				cell: info => info.getValue(),
+				header: "Job Type",
+			},
+			{
+				accessorFn: row => row.address,
+				id: 'address',
+				cell: info => info.getValue(),
+				header: "Address",
+				minSize: 200
+			},
+			{
+				accessorFn: row => row.locality,
+				id: 'locality',
+				cell: info => info.getValue(),
+				header: "Locality",
+				meta: {
+					filterVariant: 'select',
+				}
+			},
+			{
 				accessorKey: 'age',
 				id: 'age',
 				header: "Age",
@@ -147,7 +169,16 @@ export default function Home() {
 						}
 					}
 				}}
+				addDataProps={{
+					enable: true,
+					title: "Add a new netizen",
+					description: "Netizens can be rude sometimes. Add them with caution.",
+					onSubmitNewData: netizen=> {
+
+					}
+				}}
 				isLoading={isLoading}
+				dataValidationProps={[]}
 			/>
 		</>
 	);

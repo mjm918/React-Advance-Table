@@ -1,9 +1,16 @@
+import { z } from "zod";
 import {
 	Cell,
 	ColumnDef,
 	type Table
 } from "@tanstack/react-table";
-import {TDataTableContextMenuProps, TDataTableExportProps} from "@/@types";
+import {
+	TDataTableAddDataProps,
+	TDataTableContextMenuProps,
+	TDataTableDataValidation,
+	TDataTableEditDataProps,
+	TDataTableExportProps
+} from "@/@types";
 
 export interface IAdvancedDataTable<T> {
 	id: string;
@@ -14,9 +21,12 @@ export interface IAdvancedDataTable<T> {
 		onDelete?: (rows: T[])=> void;
 		onUserExport?: (rows: T[])=> void;
 	};
+	addDataProps?: TDataTableAddDataProps<T>;
+	editDataProps?: TDataTableEditDataProps<T>;
 	contextMenuProps?: TDataTableContextMenuProps;
 	onRowClick?: (prop: T) => void;
 	isLoading?: boolean;
+	dataValidationProps?: TDataTableDataValidation[];
 }
 
 export interface DataTablePaginationProps<TData> {
@@ -49,8 +59,4 @@ export interface IDataTableBody<T> {
 	table: Table<T>;
 	columnOrder: string[];
 	onClick?: (prop: T) => void;
-}
-
-interface IDataTableAddRecord {
-
 }

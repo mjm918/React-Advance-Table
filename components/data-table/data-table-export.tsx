@@ -20,7 +20,7 @@ export function DataTableExport<T>({table, onUserExport}: IDataTableExport<T>) {
 	return (
 		<Button
 			onClick={onPress}
-			aria-label="Toggle columns"
+			aria-label="Export data"
 			variant="ghost"
 			size="sm"
 			className="ml-auto hidden h-8 lg:flex text-slate-500">

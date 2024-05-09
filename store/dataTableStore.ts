@@ -1,15 +1,23 @@
 import {createContext, useContext} from "react";
 import {combine} from "zustand/middleware";
 import {createStore as createZustandStore, useStore as useZustandStore} from "zustand";
-import {TDataTableContextMenuProps, TDataTableExportProps} from "@/@types";
+import {
+	TDataTableAddDataProps,
+	TDataTableContextMenuProps, TDataTableDataValidation,
+	TDataTableEditDataProps,
+	TDataTableExportProps
+} from "@/@types";
 
 export interface IDataTableStore {
 	isSelecting: boolean;
 	exportProps?: TDataTableExportProps;
 	contextMenuProps?: TDataTableContextMenuProps;
+	addDataProps?: TDataTableAddDataProps<any>;
+	editDataProps?: TDataTableEditDataProps<any>;
+	dataValidationProps?: TDataTableDataValidation[];
 }
 
-const getDefaultState = (): IDataTableStore => ({ isSelecting: false, exportProps: undefined, contextMenuProps: undefined });
+const getDefaultState = (): IDataTableStore => ({ isSelecting: false, exportProps: undefined, contextMenuProps: undefined, addDataProps: undefined, editDataProps: undefined, dataValidationProps: []  });
 
 export const createDataTableStore = (preloadedState: IDataTableStore) => {
 	return createZustandStore(combine({...getDefaultState(), ...preloadedState},(set, get, store)=>({
@@ -18,10 +26,19 @@ export const createDataTableStore = (preloadedState: IDataTableStore) => {
 				isSelecting: !prev.isSelecting
 			}));
 		},
-		setExtraProps: (exportProps: TDataTableExportProps | undefined, contextMenuProps: TDataTableContextMenuProps | undefined) => {
+		setExtraProps: (
+			exportProps: TDataTableExportProps | undefined,
+			contextMenuProps: TDataTableContextMenuProps | undefined,
+			addDataProps: TDataTableAddDataProps<any> | undefined,
+			editDataProps: TDataTableEditDataProps<any> | undefined,
+			dataValidationProps: TDataTableDataValidation[] | undefined,
+		) => {
 			set(()=>({
 				exportProps,
-				contextMenuProps
+				contextMenuProps,
+				addDataProps,
+				editDataProps,
+				dataValidationProps: dataValidationProps ?? []
 			}));
 		}
 	})));

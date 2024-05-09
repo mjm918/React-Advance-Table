@@ -43,7 +43,6 @@ export function DataTableCell<T>({cell, onEdit, onDelete}: IDataTableCellEdit<T>
 		handler && handler(withData ? cell.row.original : undefined);
 	};
 	const showContextMenu = isSelecting !== true && contextMenuProps !== undefined;
-
 	if (showContextMenu) {
 		return (
 			<TableCell style={combinedStyle} ref={setNodeRef}>
