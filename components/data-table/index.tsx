@@ -90,7 +90,7 @@ export function AdvancedDataTable<T>(props: IAdvancedDataTable<T>) {
         if (isSelecting) {
             setInternalColumns(columns);
         } else {
-            setInternalColumns(columns.filter(item => item.id !== "select").map(item => ({...item, size: 200})));
+            setInternalColumns(columns.filter(item => item.id !== "select").map(item => ({...item, size: item.size ?? 200})));
         }
     }, [columns, isSelecting]);
 
@@ -118,20 +118,22 @@ export function AdvancedDataTable<T>(props: IAdvancedDataTable<T>) {
         filterFns: {
             fuzzy: fuzzyFilter
         },
-        globalFilterFn: "fuzzy",
+        // globalFilterFn: "fuzzy",
         onGlobalFilterChange: setGlobalFilter,
         onRowSelectionChange: setRowSelection,
         onColumnVisibilityChange: setColumnVisibility,
         onColumnPinningChange: setColumnPinning,
         onColumnOrderChange: setColumnOrder,
         onColumnFiltersChange: setColumnFilters,
+        columnResizeMode: "onChange",
+        columnResizeDirection:"ltr",
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(), //client-side filtering
+        getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        getFacetedRowModel: getFacetedRowModel(), // client-side faceting
-        getFacetedUniqueValues: getFacetedUniqueValues(), // generate unique values for select filter/autocomplete
-        getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for range filter
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
     });
 
     function onDragEnd(event: DragEndEvent) {
@@ -230,7 +232,7 @@ export function AdvancedDataTable<T>(props: IAdvancedDataTable<T>) {
                         position: "relative",
                         height: "480px",
                     }}>
-                    <Table style={{display: "grid"}}>
+                    <Table style={{display: "grid",width: table.getCenterTotalSize()}}>
                         <TableHeader
                             style={{
                                 display: "grid",
@@ -249,7 +251,7 @@ export function AdvancedDataTable<T>(props: IAdvancedDataTable<T>) {
                                         {virtualColumns.map(vc => {
                                             const header = headerGroup.headers[vc.index];
                                             return (
-                                                <DataTableHeader key={header.id} header={header}/>
+                                                <DataTableHeader table={table} key={header.id} header={header}/>
                                             );
                                         })}
                                     </SortableContext>
