@@ -14,21 +14,21 @@ export function DataTableInput({
 	onChange: (value: string | number) => void
 	debounce?: number
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) {
-	const [value, setValue] = useState(initialValue);
+    const [value, setValue] = useState(initialValue);
 
-	useEffect(() => {
-		setValue(initialValue);
-	}, [initialValue]);
+    useEffect(() => {
+        setValue(initialValue);
+    }, [initialValue]);
 
-	useEffect(() => {
-		const timeout = setTimeout(() => {
-			onChange(value);
-		}, debounce);
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            onChange(value);
+        }, debounce);
 
-		return () => clearTimeout(timeout);
-	}, [value]);
+        return () => clearTimeout(timeout);
+    }, [value]);
 
-	return (
-		<Input {...props} value={value} onChange={e => setValue(e.target.value)}/>
-	);
+    return (
+        <Input {...props} value={value} onChange={e => setValue(e.target.value)}/>
+    );
 }

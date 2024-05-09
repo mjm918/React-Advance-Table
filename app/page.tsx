@@ -20,25 +20,29 @@ export default function Home() {
             {
                 id: "select",
                 header: ({ table }: { table: Table<Person> }) => (
-                    <DataTableCheckBox
-                        {...{
-                            checked: table.getIsAllRowsSelected(),
-                            indeterminate: table.getIsSomeRowsSelected(),
-                            onChange: table.getToggleAllRowsSelectedHandler(),
-                        }}
-                    />
+                    <div className={"pt-1"}>
+                        <DataTableCheckBox
+                            {...{
+                                checked: table.getIsAllRowsSelected(),
+                                indeterminate: table.getIsSomeRowsSelected(),
+                                onChange: table.getToggleAllRowsSelectedHandler(),
+                            }}
+                        />
+                    </div>
                 ),
                 cell: ({ row }) => (
-                    <DataTableCheckBox
-                        {...{
-                            checked: row.getIsSelected(),
-                            disabled: !row.getCanSelect(),
-                            indeterminate: row.getIsSomeSelected(),
-                            onChange: row.getToggleSelectedHandler(),
-                        }}
-                    />
+                    <div className={"pt-1"}>
+                        <DataTableCheckBox
+                            {...{
+                                checked: row.getIsSelected(),
+                                disabled: !row.getCanSelect(),
+                                indeterminate: row.getIsSomeSelected(),
+                                onChange: row.getToggleSelectedHandler(),
+                            }}
+                        />
+                    </div>
                 ),
-                size: 20
+                size: 50
             },
             {
                 header: "First Name",
@@ -62,8 +66,7 @@ export default function Home() {
                 accessorFn: row => row.address,
                 id: "address",
                 cell: info => info.getValue(),
-                header: "Address",
-                minSize: 200
+                header: "Address"
             },
             {
                 accessorFn: row => row.locality,
