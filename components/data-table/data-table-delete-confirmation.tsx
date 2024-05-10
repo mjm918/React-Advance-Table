@@ -20,7 +20,7 @@ export function RequestDeleteConfirmation({children, onConfirm, multiple}: {
 }) {
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild>
+            <AlertDialogTrigger asChild={false} className={"w-full"}>
                 {children}
             </AlertDialogTrigger>
             <AlertDialogContent>

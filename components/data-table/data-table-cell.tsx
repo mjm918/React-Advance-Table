@@ -8,22 +8,24 @@ import {CSS} from "@dnd-kit/utilities";
 import {TableCell} from "@/components/ui/table";
 import {getCommonPinningStyles} from "@/lib/columns";
 import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuSeparator,
-    ContextMenuShortcut,
-    ContextMenuSub,
-    ContextMenuSubContent,
-    ContextMenuSubTrigger,
-    ContextMenuTrigger
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem, ContextMenuNotItem,
+	ContextMenuSeparator,
+	ContextMenuShortcut,
+	ContextMenuSub,
+	ContextMenuSubContent,
+	ContextMenuSubTrigger,
+	ContextMenuTrigger
 } from "@/components/ui/context-menu";
 import _ from "lodash";
 import {useDataTableStore} from "@/store/dataTableStore";
 import ReactHotkeys from "react-hot-keys";
 import {IDataTableCellEdit} from "@/interface/IDataTable";
+import {DataTableEditRow} from "@/components/data-table/data-table-edit-row";
+import {RequestDeleteConfirmation} from "@/components/data-table/data-table-delete-confirmation";
 
-export function DataTableCell<T>({cell, onEdit, onDelete}: IDataTableCellEdit<T>) {
+export function DataTableCell<T>({cell, onDelete}: IDataTableCellEdit<T>) {
     const {isDragging, setNodeRef, transform} = useSortable({
         id: cell.column.id,
     });
@@ -39,9 +41,9 @@ export function DataTableCell<T>({cell, onEdit, onDelete}: IDataTableCellEdit<T>
         ...(pinStyle || {}),
         alignContent: "center"
     };
-    const onContextMenuItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, handler?: (probably: T | undefined) => void, withData = false) => {
+    const onContextMenuItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, handler?: (probably: T) => void) => {
         event.stopPropagation();
-        handler && handler(withData ? cell.row.original : undefined);
+        handler && handler(cell.row.original);
     };
     const showContextMenu = isSelecting !== true && contextMenuProps !== undefined;
     if (showContextMenu) {
@@ -55,7 +57,7 @@ export function DataTableCell<T>({cell, onEdit, onDelete}: IDataTableCellEdit<T>
                         )}
                     </ContextMenuTrigger>
                     <ContextMenuContent className="w-36">
-                        {
+                        {/*{
                             contextMenuProps.enableEdit && (
                                 <ContextMenuItem onClick={event => onContextMenuItemClick(event, onEdit)}>
                                     Edit Row
@@ -66,7 +68,12 @@ export function DataTableCell<T>({cell, onEdit, onDelete}: IDataTableCellEdit<T>
                                     </ReactHotkeys>
                                 </ContextMenuItem>
                             )
-                        }
+                        }*/}
+						{
+							contextMenuProps.enableEdit && (
+								<DataTableEditRow presetData={cell.row.original as {[k:string]: any;}}/>
+							)
+						}
                         {
                             !_.isEmpty(contextMenuProps?.extra) && (
                                 <ContextMenuSeparator/>
@@ -97,19 +104,28 @@ export function DataTableCell<T>({cell, onEdit, onDelete}: IDataTableCellEdit<T>
                                 <ContextMenuSeparator/>
                             )
                         }
-                        {
+                        {/*{
                             contextMenuProps.enableDelete && (
                                 <ContextMenuItem onClick={event => onContextMenuItemClick(event, onDelete)}>
                                     <span className={"text-red-500"}>Delete Row</span>
-                                    <ReactHotkeys keyName={"command+d,control+d"} onKeyDown={() => onDelete && onDelete()}>
+                                    <ReactHotkeys keyName={"command+d,control+d"} onKeyDown={() => onDelete && onDelete(cell.row.original)}>
                                         <ContextMenuShortcut>
                                             <span className={"text-red-500"}>⌘ D</span>
                                         </ContextMenuShortcut>
                                     </ReactHotkeys>
                                 </ContextMenuItem>
                             )
-                        }
-                    </ContextMenuContent>
+                        }*/}
+						{
+							contextMenuProps.enableDelete && (
+								<RequestDeleteConfirmation onConfirm={()=>onDelete && onDelete(cell.row.original)} multiple={false}>
+									<ContextMenuNotItem>
+										<span className={"text-red-500"}>Delete Row</span>
+									</ContextMenuNotItem>
+								</RequestDeleteConfirmation>
+							)
+						}
+					</ContextMenuContent>
                 </ContextMenu>
             </TableCell>
         );

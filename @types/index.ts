@@ -14,11 +14,20 @@ export type TDataTableContextMenuProps = {
 };
 
 export type TDataTableDataValidation = {
-	schema: z.ZodType;
-	Component: JSX.Element;
-	label: string;
-	description?: string;
 	id: string;
+	component: "select" | "input" | "radio" | "date" | "date-range" | "checkbox" | "combobox";
+	componentCssProps?: {
+		parent?: string;
+		child?: string;
+	};
+	label?: string;
+	description?: string;
+	placeholder?: string;
+	data?: {
+		value: string;
+		children: React.ReactNode;
+	}[];
+	schema: z.ZodType;
 };
 
 export type TDataTableAddDataProps<T> = {

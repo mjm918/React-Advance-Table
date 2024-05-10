@@ -3,6 +3,7 @@ import { faker } from "@faker-js/faker";
 export type Person = {
 	firstName: string
 	lastName: string
+	gender: string
 	jobType: string
 	address: string
 	locality: string
@@ -26,6 +27,10 @@ const newPerson = (): Person => {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         jobType: faker.person.jobType(),
+		gender: faker.helpers.shuffle<Person["gender"]>([
+			"male",
+			"female"
+		])[0]!,
         address: faker.location.streetAddress({useFullAddress: true}),
         locality: faker.location.country(),
         age: faker.number.int(40),

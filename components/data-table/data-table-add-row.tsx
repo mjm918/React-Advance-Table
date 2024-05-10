@@ -6,9 +6,11 @@ import {Button} from "@/components/ui/button";
 import {useDataTableStore} from "@/store/dataTableStore";
 import _ from "lodash";
 import {z} from "zod";
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {Separator} from "@/components/ui/separator";
+import React from "react";
+import {DataTableForm} from "@/components/data-table/data-table-form";
 
 export function DataTableAddRow() {
     const {title, description, onSubmitNewData, schemas} = useDataTableStore(state => ({
@@ -33,13 +35,13 @@ export function DataTableAddRow() {
         defaultValues: FormSchema.defaultValues,
     });
     const onSubmit = (data: z.infer<typeof FormSchema.schema>) => {
-
+		onSubmitNewData && onSubmitNewData(data);
     };
     return (
         <Sheet>
-            <SheetTrigger>
+            <SheetTrigger asChild>
                 <Button
-                    aria-label="Toggle columns"
+                    aria-label="Toggle create new"
                     variant="default"
                     size="sm"
                     className="ml-auto hidden h-8 lg:flex">
@@ -47,7 +49,7 @@ export function DataTableAddRow() {
                     Create New
                 </Button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className={"space-y-2 overflow-y-auto"}>
                 <SheetHeader>
                     <SheetTitle>{title ?? "Create a new record in the list"}</SheetTitle>
                     {
@@ -58,37 +60,10 @@ export function DataTableAddRow() {
                         )
                     }
                 </SheetHeader>
+				<Separator/>
                 {
                     Object.keys(FormSchema.defaultValues).length > 0 && schemas !== undefined && (
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)}>
-                                {
-                                    schemas.map(({id, Component, label, description}, index) =>
-                                        <FormField
-                                            key={String("--this-form-").concat(id, index.toString())}
-                                            control={form.control}
-                                            name={id as never}
-                                            render={({field}) => (
-                                                <FormItem>
-                                                    <FormLabel>{label}</FormLabel>
-                                                    <FormControl>
-                                                        {/* @ts-ignore */}
-                                                        {Component && (<Component {...field} />)}
-                                                    </FormControl>
-                                                    {
-                                                        !_.isEmpty(description) && (
-                                                            <FormDescription>
-                                                                {description}
-                                                            </FormDescription>
-                                                        )
-                                                    }
-                                                    <FormMessage/>
-                                                </FormItem>
-                                            )}
-                                        />)
-                                }
-                            </form>
-                        </Form>
+                        <DataTableForm schemas={schemas} form={form} onSubmit={onSubmit}/>
                     )
                 }
             </SheetContent>

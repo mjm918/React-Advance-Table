@@ -46,7 +46,7 @@ export function DataTableBody<T>(props: IDataTableBody<T>) {
                                     key={cell.id}
                                     items={columnOrder}
                                     strategy={horizontalListSortingStrategy}>
-                                    <DataTableCell onEdit={() => console.log("edit")} cell={cell} key={cell.id}/>
+                                    <DataTableCell cell={cell} key={cell.id}/>
                                 </SortableContext>
                             );
                         })}

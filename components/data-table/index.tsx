@@ -163,6 +163,7 @@ export function AdvancedDataTable<T>(props: IAdvancedDataTable<T>) {
         estimateSize: index => visibleColumns[index].getSize(),
         getScrollElement: () => tableContainerRef.current,
         horizontal: true,
+		overscan: 50
     });
     const rowVirtualizer = useVirtualizer({
         count: table.getRowModel().rows.length,
@@ -173,7 +174,7 @@ export function AdvancedDataTable<T>(props: IAdvancedDataTable<T>) {
 			navigator.userAgent.indexOf("Firefox") === -1
 			    ? element => element?.getBoundingClientRect().height
 			    : undefined,
-        overscan: 100,
+        overscan: 100
     });
     const virtualColumns = columnVirtualizer.getVirtualItems();
     let virtualPaddingLeft: number | undefined;
@@ -238,7 +239,6 @@ export function AdvancedDataTable<T>(props: IAdvancedDataTable<T>) {
                                 display: "grid",
                                 position: "sticky",
                                 top: "0px",
-                                zIndex: 1,
                             }}>
                             {table.getHeaderGroups().map(headerGroup => (
                                 <TableRow style={{display: "flex", width: "100%"}} key={headerGroup.id}>

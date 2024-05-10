@@ -183,22 +183,30 @@ const ContextMenuShortcut = ({
         />
     );
 };
+
+const ContextMenuNotItem = ({children}:{children: React.ReactNode}) => (
+	<div className={"relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-accent"}>
+		{children}
+	</div>
+);
+
 ContextMenuShortcut.displayName = "ContextMenuShortcut";
 
 export {
-    ContextMenu,
-    ContextMenuTrigger,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuCheckboxItem,
-    ContextMenuRadioItem,
-    ContextMenuLabel,
-    ContextMenuSeparator,
-    ContextMenuShortcut,
-    ContextMenuGroup,
-    ContextMenuPortal,
-    ContextMenuSub,
-    ContextMenuSubContent,
-    ContextMenuSubTrigger,
-    ContextMenuRadioGroup,
+	ContextMenu,
+	ContextMenuTrigger,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuCheckboxItem,
+	ContextMenuRadioItem,
+	ContextMenuLabel,
+	ContextMenuSeparator,
+	ContextMenuShortcut,
+	ContextMenuGroup,
+	ContextMenuPortal,
+	ContextMenuSub,
+	ContextMenuSubContent,
+	ContextMenuSubTrigger,
+	ContextMenuRadioGroup,
+	ContextMenuNotItem
 };

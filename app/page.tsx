@@ -10,6 +10,8 @@ import {DataTableCheckBox} from "@/components/data-table/data-table-checkbox";
 import {Button} from "@/components/ui/button";
 import {GitHubLogoIcon} from "@radix-ui/react-icons";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
+import {z} from "zod";
+import {faker} from "@faker-js/faker";
 
 const data = makeData(100_000);
 export default function Home() {
@@ -56,6 +58,14 @@ export default function Home() {
                 cell: info => info.getValue(),
                 header: "Last Name",
             },
+			{
+				accessorKey: "gender",
+				id: "gender",
+				header: "Gender",
+				meta: {
+					filterVariant: "select",
+				},
+			},
             {
                 accessorFn: row => row.jobType,
                 id: "jobType",
@@ -93,6 +103,14 @@ export default function Home() {
                     filterVariant: "range",
                 },
             },
+			{
+				accessorKey: "status",
+				id: "status",
+				header: "Status",
+				meta: {
+					filterVariant: "select",
+				},
+			},
             {
                 accessorKey: "lastUpdate",
                 id: "lastUpdate",
@@ -109,14 +127,6 @@ export default function Home() {
                     const {from, to} = filterValue;
                     return isWithinInterval(columnDate,{ start: from, end: to || from });
                 }
-            },
-            {
-                accessorKey: "status",
-                id: "status",
-                header: "Status",
-                meta: {
-                    filterVariant: "select",
-                },
             }
         ],
         []
@@ -181,7 +191,94 @@ export default function Home() {
                     }
                 }}
                 isLoading={isLoading}
-                dataValidationProps={[]}
+                dataValidationProps={[
+					{
+						id: "firstName",
+						component: "input",
+						label: "First Name",
+						schema: z.string().min(3,"First name must be at least 3 characters")
+					},
+					{
+						id: "lastName",
+						component: "input",
+						label: "Last Name",
+						schema: z.string().min(3,"Last name must be at least 3 characters")
+					},
+					{
+						id: "address",
+						component: "input",
+						label: "Address",
+						schema: z.string().min(3,"Address must be at least 3 characters")
+					},
+					{
+						id: "status",
+						component: "select",
+						label: "Relationship Status",
+						placeholder: "Your current relationship status?",
+						data: [
+							{
+								value: "relationship",
+								children: "relationship"
+							},
+							{
+								value: "complicated",
+								children: "complicated"
+							},
+							{
+								value: "single",
+								children: "single"
+							}
+						],
+						schema: z.enum([
+							"relationship",
+							"complicated",
+							"single"
+						]),
+						componentCssProps: {
+							parent: "w-full"
+						}
+					},
+					{
+						id: "gender",
+						component: "radio",
+						label: "Gender",
+						placeholder: "There are only 2 genders",
+						data: [
+							{
+								value: "male",
+								children: "Male"
+							},
+							{
+								value: "female",
+								children: "Female"
+							}
+						],
+						schema: z.enum([
+							"male",
+							"female"
+						]),
+						componentCssProps: {
+							parent: "w-full"
+						}
+					},
+					{
+						id: "locality",
+						component: "combobox",
+						label: "Locality",
+						placeholder: "Your current location?",
+						data: new Array(120).fill(0).map((_it,_idx)=>{
+							const country = faker.location.country();
+							return {
+								value: country,
+								children: country
+							};
+						}),
+						schema: z.string().min(3,"You must choose your locality"),
+						componentCssProps: {
+							parent: "w-full"
+						}
+					}
+				]}
             />
         </>
     );

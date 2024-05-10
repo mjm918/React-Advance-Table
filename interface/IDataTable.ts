@@ -52,8 +52,7 @@ export interface DataTableViewOptionsProps<TData> {
 
 export interface IDataTableCellEdit<T> {
 	cell: Cell<T, unknown>;
-	onEdit?: () => void;
-	onDelete?: () => void;
+	onDelete?: (props: T) => void;
 }
 
 export interface IDataTableBody<T> {
