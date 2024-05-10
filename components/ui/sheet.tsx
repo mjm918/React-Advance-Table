@@ -58,7 +58,7 @@ const SheetContent = React.forwardRef<
   SheetContentProps
 >(({ side = "right", className, children, ...props }, ref) => (
     <SheetPortal>
-        <SheetOverlay />
+        <SheetOverlay onClick={event => event.stopPropagation()} />
         <SheetPrimitive.Content
             ref={ref}
             className={cn(sheetVariants({ side }), className)}

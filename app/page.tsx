@@ -140,75 +140,86 @@ export default function Home() {
     },[]);
 
     return (
-        <>
-            <Alert className={"mb-2"}>
-                <AlertTitle>
-                    React Advance Table - Using TanStack Table
-                </AlertTitle>
-                <AlertDescription className={"text-slate-500 text-xs"}>
-                    This is not a library or anything. Just an example of TanStack React Table.
-                    <div className={"flex flex-row items-center max-w-64 float-right -mt-2"}>
-                        <span className={"text-xs items-center"}>
-                            Project available on
-                        </span>
-                        <Button className={"text-xs"} variant={"link"}>
-                            <GitHubLogoIcon/>
-                            <a className={"ml-1"} target={"_blank"} href={"https://github.com/mjm918/React-Advance-Table"}>Github</a>
-                        </Button>
-                    </div>
-                </AlertDescription>
-            </Alert>
-            <AdvancedDataTable<Person>
-                id={"example-advance-table"}
-                columns={columns}
-                data={data}
-                exportProps={{
-                    exportFileName: filename
-                }}
-                actionProps={{
-                    onDelete: (props) => {
-                        console.log(props);
-                    }
-                }}
-                onRowClick={(prop) => {
-                    console.log(prop);
-                }}
-                contextMenuProps={{
-                    enableEdit: true,
-                    enableDelete: true,
-                    extra: {
-                        "Copy to clipboard": (data) => {
-                            console.log("are we here?", data);
-                        }
-                    }
-                }}
-                addDataProps={{
-                    enable: true,
-                    title: "Add a new netizen",
-                    description: "Netizens can be rude sometimes. Add them with caution.",
-                    onSubmitNewData: netizen=> {
-
-                    }
-                }}
-                isLoading={isLoading}
-                dataValidationProps={[
+		<>
+			<Alert className={"mb-2"}>
+				<AlertTitle>
+					React Advance Table - Using TanStack Table
+				</AlertTitle>
+				<AlertDescription className={"text-slate-500 text-xs"}>
+					This is not a library or anything. Just an example of TanStack React Table.
+					<div className={"flex flex-row items-center max-w-64 float-right -mt-2"}>
+						<span className={"text-xs items-center"}>
+							Project available on
+						</span>
+						<Button className={"text-xs"} variant={"link"}>
+							<GitHubLogoIcon/>
+							<a className={"ml-1"} target={"_blank"}
+							   href={"https://github.com/mjm918/React-Advance-Table"}>Github</a>
+						</Button>
+					</div>
+				</AlertDescription>
+			</Alert>
+			<AdvancedDataTable<Person>
+				id={"example-advance-table"}
+				columns={columns}
+				data={data}
+				exportProps={{
+					exportFileName: filename
+				}}
+				actionProps={{
+					onDelete: (props) => {
+						console.log("actionProps",props);
+					}
+				}}
+				onRowClick={(prop) => {
+					console.log("onRowClick",prop);
+				}}
+				contextMenuProps={{
+					enableEdit: true,
+					enableDelete: true,
+					onDelete: (prop)=> {
+						console.log("contextMenuProps:onDelete",prop);
+					},
+					extra: {
+						"Copy to clipboard": (data) => {
+							console.log("contextMenuProps:onClipboard", data);
+						}
+					}
+				}}
+				addDataProps={{
+					enable: true,
+					title: "Add a new netizen",
+					description: "Netizens can be rude sometimes. Add them with caution.",
+					onSubmitNewData: netizen => {
+						console.log("onSubmitNewData",netizen);
+					}
+				}}
+				editDataProps={{
+					title: "Amend netizen data",
+					description: "Netizens can be rude sometimes. Edit them with caution.",
+					onSubmitEditData: netizen => {
+						console.log("onSubmitEditData",netizen);
+					}
+				}}
+				isLoading={isLoading}
+				dataValidationProps={[
 					{
 						id: "firstName",
 						component: "input",
 						label: "First Name",
-						schema: z.string().min(3,"First name must be at least 3 characters")
+						schema: z.string().min(3, "First name must be at least 3 characters")
 					},
 					{
 						id: "lastName",
 						component: "input",
 						label: "Last Name",
-						schema: z.string().min(3,"Last name must be at least 3 characters")
+						schema: z.string().min(3, "Last name must be at least 3 characters")
 					},
 					{
 						id: "address",
 						component: "input",
 						label: "Address",
-						schema: z.string().min(3,"Address must be at least 3 characters")
+						schema: z.string().min(3, "Address must be at least 3 characters")
 					},
 					{
 						id: "status",
@@ -266,20 +277,30 @@ export default function Home() {
 						component: "combobox",
 						label: "Locality",
 						placeholder: "Your current location?",
-						data: new Array(120).fill(0).map((_it,_idx)=>{
+						data: new Array(120).fill(0).map((_it, _idx) => {
 							const country = faker.location.country();
 							return {
 								value: country,
 								children: country
 							};
 						}),
-						schema: z.string().min(3,"You must choose your locality"),
+						schema: z.string().min(3, "You must choose your locality"),
 						componentCssProps: {
 							parent: "w-full"
 						}
 					}
 				]}
-            />
-        </>
-    );
+			/>
+			<div className={"flex flex-row items-center max-w-96 float-right"}>
+				<span className={"text-xs items-center"}>
+					Shared by ❤️
+				</span>
+				<Button className={"text-xs"} variant={"link"}>
+					<GitHubLogoIcon/>
+					<a className={"ml-1"} target={"_blank"}
+					   href={"https://github.com/mjm918"}>Mohammad Julfikar Mahmud</a>
+				</Button>
+			</div>
+		</>
+	);
 }

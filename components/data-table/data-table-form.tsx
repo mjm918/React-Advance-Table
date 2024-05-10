@@ -73,7 +73,7 @@ export function DataTableForm<FormType extends ZodType<any, any, any>>({schemas,
 					})
 				}
 				<div className={"h-6"}></div>
-				<Button className={"w-full"} type="submit">Submit</Button>
+				<Button onClick={event => event.stopPropagation()} className={"w-full"} type="submit">Submit</Button>
 			</form>
 		</Form>
 	);

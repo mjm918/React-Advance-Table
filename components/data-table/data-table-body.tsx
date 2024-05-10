@@ -23,7 +23,7 @@ export function DataTableBody<T>(props: IDataTableBody<T>) {
                 const visibleCells = row.getVisibleCells();
 
                 return (
-                    <TableRow onClick={() => props.onClick && props.onClick(row.original)} key={row.id}
+                    <TableRow onClick={()=>props.onClick && props.onClick(row.original)} key={row.id}
                         className={props.onClick ? "cursor-pointer" : ""}
                         data-index={virtualRow.index} //needed for dynamic row height measurement
                         ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height

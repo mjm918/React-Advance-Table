@@ -39,12 +39,9 @@ export function DataTableEditRow<T>({presetData}:{presetData: {[k:string]: any;}
 	const onSubmit = (data: z.infer<typeof FormSchema.schema>) => {
 		onSubmitEditData && onSubmitEditData(data);
 	};
-	const ignoreClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		event.stopPropagation();
-	};
 	return (
 		<Sheet>
-			<SheetTrigger asChild={false} className={"w-full"}>
+			<SheetTrigger asChild={false} className={"w-full"} onClick={event => event.stopPropagation()}>
 				<ContextMenuNotItem>
 					Edit Row
 				</ContextMenuNotItem>
