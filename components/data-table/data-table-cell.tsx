@@ -25,7 +25,7 @@ import {IDataTableCellEdit} from "@/interface/IDataTable";
 import {DataTableEditRow} from "@/components/data-table/data-table-edit-row";
 import {RequestDeleteConfirmation} from "@/components/data-table/data-table-delete-confirmation";
 
-export function DataTableCell<T>({cell, onDelete}: IDataTableCellEdit<T>) {
+export function DataTableCell<T>({cell}: IDataTableCellEdit<T>) {
     const {isDragging, setNodeRef, transform} = useSortable({
         id: cell.column.id,
     });
@@ -57,18 +57,6 @@ export function DataTableCell<T>({cell, onDelete}: IDataTableCellEdit<T>) {
                         )}
                     </ContextMenuTrigger>
                     <ContextMenuContent className="w-36">
-                        {/*{
-                            contextMenuProps.enableEdit && (
-                                <ContextMenuItem onClick={event => onContextMenuItemClick(event, onEdit)}>
-                                    Edit Row
-                                    <ReactHotkeys keyName={"command+e,control+e"} onKeyDown={() => onEdit && onEdit()}>
-                                        <ContextMenuShortcut>
-                                            ⌘ E
-                                        </ContextMenuShortcut>
-                                    </ReactHotkeys>
-                                </ContextMenuItem>
-                            )
-                        }*/}
 						{
 							contextMenuProps.enableEdit && (
 								<DataTableEditRow presetData={cell.row.original as {[k:string]: any;}}/>
@@ -104,21 +92,9 @@ export function DataTableCell<T>({cell, onDelete}: IDataTableCellEdit<T>) {
                                 <ContextMenuSeparator/>
                             )
                         }
-                        {/*{
-                            contextMenuProps.enableDelete && (
-                                <ContextMenuItem onClick={event => onContextMenuItemClick(event, onDelete)}>
-                                    <span className={"text-red-500"}>Delete Row</span>
-                                    <ReactHotkeys keyName={"command+d,control+d"} onKeyDown={() => onDelete && onDelete(cell.row.original)}>
-                                        <ContextMenuShortcut>
-                                            <span className={"text-red-500"}>⌘ D</span>
-                                        </ContextMenuShortcut>
-                                    </ReactHotkeys>
-                                </ContextMenuItem>
-                            )
-                        }*/}
 						{
 							contextMenuProps.enableDelete && (
-								<RequestDeleteConfirmation onConfirm={()=>onDelete && onDelete(cell.row.original)} multiple={false}>
+								<RequestDeleteConfirmation onConfirm={()=>contextMenuProps.onDelete(cell.row.original)} multiple={false}>
 									<ContextMenuNotItem>
 										<span className={"text-red-500"}>Delete Row</span>
 									</ContextMenuNotItem>
