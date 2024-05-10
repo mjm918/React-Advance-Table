@@ -1,11 +1,11 @@
 "use client";
 
-import {flexRender, Header} from "@tanstack/react-table";
-import {useSortable} from "@dnd-kit/sortable";
-import {CSSProperties} from "react";
-import {CSS} from "@dnd-kit/utilities";
-import {TableHead} from "@/components/ui/table";
-import {Button} from "@/components/ui/button";
+import { flexRender, Header, Table } from "@tanstack/react-table";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSSProperties } from "react";
+import { CSS } from "@dnd-kit/utilities";
+import { TableHead } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
 	ArrowDownIcon,
 	ArrowDownNarrowWideIcon,
@@ -19,11 +19,11 @@ import {
 	PinIcon,
 	PinOffIcon
 } from "lucide-react";
-import {CaretSortIcon} from "@radix-ui/react-icons";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {DataTableFilter} from "@/components/data-table/data-table-filter";
-import {DataTableInputDate} from "@/components/data-table/data-table-input-date";
-import {getCommonPinningStyles} from "@/lib/columns";
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DataTableFilter } from "@/components/data-table/data-table-filter";
+import { DataTableInputDate } from "@/components/data-table/data-table-input-date";
+import { getCommonPinningStyles } from "@/lib/columns";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -32,11 +32,11 @@ import {
 	ContextMenuShortcut,
 	ContextMenuTrigger
 } from "@/components/ui/context-menu";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {useDataTableStore} from "@/store/dataTableStore";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useDataTableStore } from "@/store/dataTableStore";
 
-export function DataTableHeader<T>({ header }: { header: Header<T, unknown>; }) {
-	const {isSelecting} = useDataTableStore(state => ({...state}));
+export function DataTableHeader<T>({ header, table }: { header: Header<T, unknown>; table: Table<T> }) {
+	const { isSelecting } = useDataTableStore(state => ({ ...state }));
 	const { attributes, isDragging, listeners, setNodeRef, transform } =
 		useSortable({
 			id: header.column.id,
@@ -46,22 +46,24 @@ export function DataTableHeader<T>({ header }: { header: Header<T, unknown>; }) 
 	const pinStyle = getCommonPinningStyles(column);
 	const combinedStyles: CSSProperties = {
 		opacity: isDragging ? 0.8 : 1,
-		position: 'relative',
+		position: "relative",
 		transform: CSS.Translate.toString(transform), // translate instead of transform to avoid squishing
-		transition: 'width transform 0.2s ease-in-out',
-		whiteSpace: 'nowrap',
+		transition: "width transform 0.2s ease-in-out",
+		whiteSpace: "nowrap",
 		width: header.column.getSize(),
 		zIndex: isDragging ? 1 : 0,
-		...(pinStyle || {})
+		...(pinStyle || {}),
+		alignContent: "center"
 	};
 
 	if (isSelecting) {
 		return (
 			<TableHead
-				className={"text-slate-500 text-xs"}
-				colSpan={header.colSpan}
-				ref={setNodeRef}>
-				{flexRender(
+				style={ combinedStyles }
+				className={ "text-slate-500 text-xs content-center"}
+				colSpan={ header.colSpan }
+				ref={ setNodeRef } >
+				{ flexRender(
 					column.columnDef.header,
 					header.getContext()
 				)}
@@ -71,53 +73,51 @@ export function DataTableHeader<T>({ header }: { header: Header<T, unknown>; }) 
 
 	return (
 		<TableHead
-			className={"p-0 pl-1"}
-			colSpan={header.colSpan}
-			ref={setNodeRef}
-			style={combinedStyles}>
+			className={ "p-0 pl-1 border-r border-dashed border-slate-400 hover:border-r-0"}
+			colSpan={ header.colSpan }
+			ref={ setNodeRef }
+			style={ combinedStyles } >
 			<ContextMenu>
 				<ContextMenuTrigger>
-					<div className={"flex flex-row items-center space-x-1"}>
-						{
-							column.getIsPinned() === false ?
-								<Tooltip>
-									<TooltipTrigger>
-										<GripVerticalIcon className="h-4 w-4 text-slate-500"
-														  aria-hidden="false" {...attributes} {...listeners} />
-									</TooltipTrigger>
-									<TooltipContent>
-										<p>Rearrange this column</p>
-									</TooltipContent>
-								</Tooltip> : null
+					<div className={ "flex flex-row items-center space-x-1" }>
+						{ column.getIsPinned() === false ?
+							<Tooltip>
+								<TooltipTrigger>
+									<GripVerticalIcon className="h-4 w-4 text-slate-500"
+													  aria-hidden="false" {...attributes} {...listeners} />
+								</TooltipTrigger>
+								<TooltipContent>
+									<p>Rearrange this column</p>
+								</TooltipContent>
+							</Tooltip> : null
 						}
 						<Tooltip>
 							<TooltipTrigger>
-								{
-									isPlaceholder ? null :
-										<Button
-											onClick={() => column.toggleSorting()}
-											aria-label={
-												column.getIsSorted() === "desc"
-													? "Sorted descending. Click to sort ascending."
-													: column.getIsSorted() === "asc"
-														? "Sorted ascending. Click to sort descending."
-														: "Not sorted. Click to sort ascending."
-											}
-											variant="ghost"
-											size="sm"
-											className="h-7 text-slate-500 data-[state=open]:bg-accent">
-											{flexRender(
-												column.columnDef.header,
-												header.getContext()
-											)}
-											{column.getIsSorted() === "desc" ? (
-												<ArrowDownIcon className="ml-2 h-4 w-4" aria-hidden="true"/>
-											) : column.getIsSorted() === "asc" ? (
-												<ArrowUpIcon className="ml-2 h-4 w-4" aria-hidden="true"/>
-											) : (
-												<CaretSortIcon className="ml-2 h-4 w-4" aria-hidden="true"/>
-											)}
-										</Button>
+								{ isPlaceholder ? null :
+									<Button
+										onClick={ () => column.toggleSorting() }
+										aria-label={
+											column.getIsSorted() === "desc"
+												? "Sorted descending. Click to sort ascending."
+												: column.getIsSorted() === "asc"
+													? "Sorted ascending. Click to sort descending."
+													: "Not sorted. Click to sort ascending."
+										}
+										variant="ghost"
+										size="sm"
+										className="h-7 text-slate-500 data-[state=open]:bg-accent">
+										{ flexRender(
+											column.columnDef.header,
+											header.getContext()
+										)}
+										{ column.getIsSorted() === "desc" ? (
+											<ArrowDownIcon className= "ml-2 h-4 w-4" aria-hidden="true" />
+										) : column.getIsSorted() === "asc" ? (
+											<ArrowUpIcon className= "ml-2 h-4 w-4" aria-hidden="true" />
+										) : (
+											<CaretSortIcon className= "ml-2 h-4 w-4" aria-hidden="true" />
+										)}
+									</Button>
 								}
 							</TooltipTrigger>
 							<TooltipContent>
@@ -126,7 +126,7 @@ export function DataTableHeader<T>({ header }: { header: Header<T, unknown>; }) 
 						</Tooltip>
 						<Tooltip>
 							<TooltipTrigger>
-								<FilterPopover header={header}/>
+								<FilterPopover header={ header } />
 							</TooltipTrigger>
 							<TooltipContent>
 								<p>Filter rows by this column</p>
@@ -134,94 +134,96 @@ export function DataTableHeader<T>({ header }: { header: Header<T, unknown>; }) 
 						</Tooltip>
 						<Tooltip>
 							<TooltipTrigger>
-								{
-									column.getIsPinned() ?
-										<PinOffIcon className="h-4 w-4 text-slate-500" onClick={() => column.pin(false)}/> :
-										<PinIcon className="h-4 w-4 text-slate-500" onClick={() => column.pin("left")}/>
+								{ column.getIsPinned() ?
+									<PinOffIcon className="h-4 w-4 text-slate-500"
+												onClick={() => column.pin(false)}
+									/> :
+									<PinIcon className="h-4 w-4 text-slate-500" onClick={() => column.pin("left")}/>
 								}
 							</TooltipTrigger>
 							<TooltipContent>
-								<p>{column.getIsPinned() ? "Unpin this column" : "Pin this column"}</p>
+								<p>{ column.getIsPinned() ? "Unpin this column" : "Pin this column" }</p>
 							</TooltipContent>
 						</Tooltip>
 					</div>
 				</ContextMenuTrigger>
 				<ContextMenuContent className="w-64">
-					{
-						column.getIsPinned() ?
-							<ContextMenuItem inset onClick={()=>column.pin(false)}>
-								Unpin
-								<ContextMenuShortcut>
-									<PinOffIcon className={"w-4 h-4"}/>
-								</ContextMenuShortcut>
-							</ContextMenuItem> : null
+					{ column.getIsPinned() ?
+						<ContextMenuItem inset onClick={() => column.pin(false)}>
+							Unpin
+							<ContextMenuShortcut>
+								<PinOffIcon className={ "w-4 h-4" } />
+							</ContextMenuShortcut>
+						</ContextMenuItem> : null
 					}
-					{
-						column.getIsPinned() ? null :
-							<ContextMenuItem inset onClick={()=>column.pin("left")}>
-								Pin Left
-								<ContextMenuShortcut>
-									<MoveLeftIcon className={"w-4 h-4"}/>
-								</ContextMenuShortcut>
-							</ContextMenuItem>
+					{ column.getIsPinned() ? null :
+						<ContextMenuItem inset onClick={() => column.pin("left")}>
+							Pin Left
+							<ContextMenuShortcut>
+								<MoveLeftIcon className={ "w-4 h-4" } />
+							</ContextMenuShortcut>
+						</ContextMenuItem>
 					}
-					{
-						column.getIsPinned() ? null :
-							<ContextMenuItem inset onClick={()=>column.pin("right")}>
-								Pin Right
-								<ContextMenuShortcut>
-									<MoveRightIcon className={"w-4 h-4"}/>
-								</ContextMenuShortcut>
-							</ContextMenuItem>
+					{ column.getIsPinned() ? null :
+						<ContextMenuItem inset onClick={() => column.pin("right")}>
+							Pin Right
+							<ContextMenuShortcut>
+								<MoveRightIcon className={ "w-4 h-4" } />
+							</ContextMenuShortcut>
+						</ContextMenuItem>
 					}
 					<ContextMenuSeparator/>
-					{
-						column.getIsSorted() === "asc" ? null :
-							<ContextMenuItem inset onClick={()=>column.toggleSorting(false)}>
-								Sort Ascending
-								<ContextMenuShortcut>
-									<ArrowDownNarrowWideIcon className={"w-4 h-4"}/>
-								</ContextMenuShortcut>
-							</ContextMenuItem>
+					{ column.getIsSorted() === "asc" ? null :
+						<ContextMenuItem inset onClick={() => column.toggleSorting(false)}>
+							Sort Ascending
+							<ContextMenuShortcut>
+								<ArrowDownNarrowWideIcon className={ "w-4 h-4" } />
+							</ContextMenuShortcut>
+						</ContextMenuItem>
 					}
-					{
-						column.getIsSorted() === "desc" ? null :
-							<ContextMenuItem inset onClick={()=>column.toggleSorting(true)}>
-								Sort Descending
-								<ContextMenuShortcut>
-									<ArrowUpNarrowWideIcon className={"w-4 h-4"}/>
-								</ContextMenuShortcut>
-							</ContextMenuItem>
+					{ column.getIsSorted() === "desc" ? null :
+						<ContextMenuItem inset onClick={() => column.toggleSorting(true)}>
+							Sort Descending
+							<ContextMenuShortcut>
+								<ArrowUpNarrowWideIcon className={ "w-4 h-4" } />
+							</ContextMenuShortcut>
+						</ContextMenuItem>
 					}
-					{
-						column.getIsSorted() === "asc" || column.getIsSorted() === "desc" ?
-							<ContextMenuItem inset onClick={()=>column.clearSorting()}>
-								Clear Sorting
-								<ContextMenuShortcut>
-									<CaretSortIcon className={"w-4 h-4"}/>
-								</ContextMenuShortcut>
-							</ContextMenuItem> : null
+					{ column.getIsSorted() === "asc" || column.getIsSorted() === "desc" ?
+						<ContextMenuItem inset onClick={() => column.clearSorting()}>
+							Clear Sorting
+							<ContextMenuShortcut>
+								<CaretSortIcon className={ "w-4 h-4" } />
+							</ContextMenuShortcut>
+						</ContextMenuItem> : null
 					}
 					<ContextMenuSeparator/>
-					<ContextMenuItem inset onClick={()=>column.toggleVisibility()}>
+					<ContextMenuItem inset onClick={() => column.toggleVisibility()}>
 						Hide
 						<ContextMenuShortcut>
-							<EyeOffIcon className={"w-4 h-4"}/>
+							<EyeOffIcon className={ "w-4 h-4" } />
 						</ContextMenuShortcut>
 					</ContextMenuItem>
 				</ContextMenuContent>
 			</ContextMenu>
+			<div {...{
+				onDoubleClick: () => header.column.resetSize(),
+				onMouseDown: header.getResizeHandler(),
+				onTouchStart: header.getResizeHandler(),
+				className: `resizer ltr ${header.column.getIsResizing() ? "isResizing" : ""}`,
+			}}
+			/>
 		</TableHead>
 	);
 }
 
-function FilterPopover<T>({header}:{header: Header<T, unknown>;}) {
-	const {column} = header;
-	const {filterVariant} = column.columnDef.meta ?? {};
+function FilterPopover<T>({ header }: { header: Header<T, unknown>; }) {
+	const { column } = header;
+	const { filterVariant } = column.columnDef.meta ?? {};
 	return (
 		<Popover>
-			<PopoverTrigger asChild>
-				<FilterIcon className="h-4 w-4 text-slate-500"/>
+			<PopoverTrigger asChild >
+				<FilterIcon className= "h-4 w-4 text-slate-500" />
 			</PopoverTrigger>
 			<PopoverContent className="w-fit p-5">
 				<div className="grid gap-4">
@@ -231,13 +233,12 @@ function FilterPopover<T>({header}:{header: Header<T, unknown>;}) {
 							Filter will be applied to current column only.
 						</p>
 					</div>
-					{
-						header.column.getCanFilter() ?
-							filterVariant === "date" ?
-								<DataTableInputDate column={column}/>
-								:
-								<DataTableFilter column={column}/> :
-							null
+					{ header.column.getCanFilter() ?
+						filterVariant === "date" ?
+							<DataTableInputDate column={ column } />
+							:
+							<DataTableFilter column={ column } /> :
+						null
 					}
 				</div>
 			</PopoverContent>
